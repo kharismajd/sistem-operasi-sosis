@@ -2,11 +2,12 @@
 void handleInterrupt21 (int AX, int BX, int CX, int DX);
 void printString(char *string);
 void readString(char *string);
+void printLogo();
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 
 int main() {
 	char x[100];
-	printString("Mampusssss");
+	printLogo();
 	readString(&x);
 	printString(&x);
 	readString(&x);
@@ -38,6 +39,16 @@ void printString(char *string) {
 
 int printInterupt(char *string){
     return (*string != '\0' ? 1 : 0);
+}
+
+void printLogo() {
+	printString("----------\n");
+	printString("sOSissOSis\n");
+	printString("OSissOSiss\n");
+	printString("sissOSisso\n");
+	printString("issOSissOS\n");
+	printString("ssOSissOSi\n");
+	printString("----------\n");
 }
 
 void readString(char* string)

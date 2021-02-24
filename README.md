@@ -6,5 +6,5 @@ IF2230 Sistem Operasi
 
 ## Author
 * 13519176 Made Kharisma Jagaddhita
-* 13519182 Farrel Abieza Zidan
+* 13519182 Farrell Abieza Zidan
 * 13519221 Allief Nuriman

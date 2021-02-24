@@ -2,14 +2,14 @@
 void handleInterrupt21 (int AX, int BX, int CX, int DX);
 void printString(char *string);
 void readString(char *string);
-void printLogo();
+void printLogo2(int baris, int kolom, int warna, int latar, char* s);
+void printLogo(int color, int bg);
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 
 int main() {
 	char x[100];
-	printLogo();
-	readString(&x);
-	printString(&x);
+	putInMemory(0xB000,0x8000,'H');
+	printLogo(0x0F,0x03);
 	readString(&x);
 	printString(&x);
 	while(1);
@@ -41,14 +41,22 @@ int printInterupt(char *string){
     return (*string != '\0' ? 1 : 0);
 }
 
-void printLogo() {
-	printString("----------\n");
-	printString("sOSissOSis\n");
-	printString("OSissOSiss\n");
-	printString("sissOSisso\n");
-	printString("issOSissOS\n");
-	printString("ssOSissOSi\n");
-	printString("----------\n");
+void printLogo2(int baris, int kolom, int warna, int latar, char* s){
+   int i = 0;
+   int offset=0x8000+((row-1)*80*2)+(40-ln/2)*2;
+   while(s[i]!='\0'){
+      putInMemory(0xB000, offset + i*2, s[i]);
+      putInMemory(0xB000, offset + i*2+1, color + (bg<<4));
+      i++;
+   }
+}
+void printLogo(int color, int bg){
+   printLogo2(7, 20, color, bg,"---------");
+   printLogo2(8, 20, color, bg,"sOSissOSis");
+   printLogo2(9, 20, color, bg,"sissOSisso");
+   printLogo2(10, 20, color, bg,"issOSissOS");
+   printLogo2(11, 20, color, bg,"ssOSissOSi");
+   printLogo2(12, 20, color, bg,"---------");
 }
 
 void readString(char* string)

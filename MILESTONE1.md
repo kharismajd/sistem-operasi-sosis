@@ -7,6 +7,7 @@ Fungsi putInMemory digunakan untuk menulis sebuah karakter pada segment memori d
 Rumus umum posisi alamat memori: 
 -	0x8000 + (80 * y + x) * 2 untuk karakter
 -	0x8001 + (80 * y + x) * 2 untuk warna
+
 0x8000 adalah offset memori yang mendefinisikan karakter pada posisi (x=0, y=0), dimana (x=0, y=0) adalah posisi kiri atas layar.
 
 printString diimplementasikan dengan menggunakan interrupt 0x10.

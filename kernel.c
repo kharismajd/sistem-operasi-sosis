@@ -29,7 +29,6 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX){
 }
 
 void printString(char *string) {
-	char enter = 0xd;
 	int i = 0;
   	while (printInterupt(&string[i])) {
     	interrupt(0x10, 0xe * 256 + string[i], 0, 0, 0);
@@ -81,5 +80,12 @@ void readString(char* string)
 			string[i] = input;
 			i++;
 		}
+	}
+}
+
+void clear(char *buffer, int length) {
+	int i;
+	for(i = 0; i < length; i++) {
+		buffer[i] = 0x0;
 	}
 }

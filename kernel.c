@@ -7,33 +7,59 @@ void printLogo();
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 void readSector(char *buffer, int sector);
 void writeSector(char *buffer, int sector);
-void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
-void readFile(char *buffer, char *path, int *result, char parentIndex);
 
 /* Utils */
 int mod(int a, int b);
 int div(int a, int b);
+int strCompare(char *a, char *b, int length);
+void getParentFromPath(char *path, char *fileSector, char parentIndex, char *dirIndex, char *fileName, int *result);
 
 int main() {
-	char x[100];
-	printLogo();
-	readString(&x);
-	printString(&x);
-	while(1);
+	char files[1024];
+	char fileName[14];
+	char path[20];
+	char dirIndex;
+	int result;
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	readString(&path);
+	getParentFromPath(path, files, 0x00, &dirIndex, fileName, &result);
+
+	//test
+	if (dirIndex == 0x03) {
+		printString(&fileName);
+	}
+	else {
+		printString("noob");
+	}
+
+	while(1){}
 }
 
-void handleInterrupt21 (int AX, int BX, int CX, int DX){
-    switch (AX) {
-    case 0x0:
-        printString(BX);
-        break;
-    case 0x1:
-        readString(BX);
-        break;
-    default:
-        printString("Invalid interrupt");
-    }
+void handleInterrupt21 (int AX, int BX, int CX, int DX) { 
+	char AL, AH; 
+	AL = (char) (AX); 
+	AH = (char) (AX >> 8); 
+	switch (AL) { 
+	case 0x00: 
+		printString(BX); 
+		break; 
+	case 0x01: 
+		readString(BX); 
+		break; 
+	case 0x02: 
+		readSector(BX, CX); 
+		break; 
+	case 0x03: 
+		writeSector(BX, CX); 
+		break; 
+	default: 
+		printString("Invalid interrupt"); 
+	} 
 }
+
 
 void printString(char *string) {
 	int i = 0;
@@ -127,4 +153,73 @@ int div(int a, int b) {
 		result++;
 	}
 	return result;
+}
+
+int strCompare(char *a, char *b, int length) {
+	int i;
+	for (i = 0; i < length; i++) {
+		if (a[i] != b[i]) {
+			return 0;
+		}
+		if (a[i] == 0 || b[i] == 0) {
+			return 1;
+		}
+	}
+	return 1;
+}
+
+void getParentFromPath(char *path, char *fileSector, char parentIndex, char *dirIndex, char *fileName, int *result) {
+	char dirName[14];
+	char pathfileName[14];
+	int fileIndex;
+	int found;
+	int i;
+	int j;
+	int k;
+
+	clear(dirName, 14);
+	clear(pathfileName, 14);
+
+	*result = 1;
+	*dirIndex = parentIndex;
+	j = 0;
+	for (i = 0; path[i] != 0x0; i++) {
+    	if (path[i] != '/'){
+    		pathfileName[j] = path[i];
+			j++;
+    	} else {
+    		for (; j < 14; j++) {
+        		pathfileName[j] = 0x0;
+      		}
+
+      		for (k = 0; k < 14; k++) {
+        		dirName[k] = pathfileName[k];
+      		}
+			
+			found = 0;
+			for (fileIndex = 0; fileIndex < 64; fileIndex++) {
+				if (fileSector[fileIndex * 16] == *dirIndex && fileSector[fileIndex * 16 + 1] == 0xFF && strCompare(dirName, fileSector + fileIndex * 16 + 2, 14)) {
+					*dirIndex = fileIndex;
+					found = 1;
+					break;
+				}
+			}
+			
+			if (found) {
+				j = 0;
+			}
+			else {
+				*result = 0;
+				break;
+			}	
+    	}
+  	}
+
+  	for (;j<14;j++) {
+    	pathfileName[j] = 0x0;
+  	}
+
+	for (i = 0; i < 14; i++) {
+        fileName[i] = pathfileName[i];
+    }
 }

@@ -127,9 +127,7 @@ void readString(char* string)
 		} else if(input == enter){		
 			interrupt(0x10, 0xe*256 + newl, 0, 0, 0); 
 			interrupt(0x10, 0xe*256 + carriage, 0, 0, 0); // Interrupt carriage return buat kembali ke line awal
-			string[i] = newl;
-			string[i+1] = carriage;
-			string[i+2] = null;	// Akhir string
+			string[i] = null;
 			return;
 		} else {
 			interrupt(0x10, 0xe*256 + input, 0, 0, 0); // Nampilin hurufnya ke layar 
@@ -251,10 +249,7 @@ void getFileNameFromPath(char *path, char *fileName) {
 
 	j = 0;
 	for (i = 0; path[i] != 0x0; i++) {
-		if (path[i] == '\n') {
-			break;
-		}
-		else if (path[i] != '/') {
+		if (path[i] != '/') {
 			fileName[j] = path[i];
 			j++;
 		}

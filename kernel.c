@@ -5,6 +5,14 @@ void readString(char *string);
 void printLogo2(int baris, int kolom, char* s);
 void printLogo();
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
+void readSector(char *buffer, int sector);
+void writeSector(char *buffer, int sector);
+void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
+void readFile(char *buffer, char *path, int *result, char parentIndex);
+
+/* Utils */
+int mod(int a, int b);
+int div(int a, int b);
 
 int main() {
 	char x[100];
@@ -95,4 +103,28 @@ void clear(char *buffer, int length) {
 	for(i = 0; i < length; i++) {
 		buffer[i] = 0x0;
 	}
+}
+
+void readSector(char *buffer, int sector) {
+	interrupt(0x13, 0x201, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
+}
+
+void writeSector(char *buffer, int sector) {
+	interrupt(0x13, 0x301, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
+}
+
+int mod(int a, int b){
+    while(a >= b){
+        a = a - b;
+    }
+    return a;
+}
+
+int div(int a, int b) {
+	int result = 0;
+	while (a >= b) {
+		a = a - b;
+		result++;
+	}
+	return result;
 }

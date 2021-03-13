@@ -7,6 +7,9 @@ void printLogo();
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 void readSector(char *buffer, int sector);
 void writeSector(char *buffer, int sector);
+void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
+void readFile(char *buffer, char *path, int *result, char parentIndex);
+
 
 /* Utils */
 int mod(int a, int b);
@@ -19,8 +22,8 @@ void searchFile(char *path, char parentIndex, char *index, char *result);
 int main() {
 	char files[1024];
 	char fileName[14];
-	char path[20];
-	char dirIndex;
+	char path[100];
+	char index;
 	int result;
 
 	readSector(files, 0x101);
@@ -28,12 +31,13 @@ int main() {
 
 	readString(&path);
 
-	getDirIdxFromPath(path, 0x00, &dirIndex, &result);
-	getFileNameFromPath(path, fileName);
-
+	searchFile(path, 0x00, &index, &result);
 	//test
-	if (dirIndex == 0x03) {
-		printString(&fileName);
+	if (result == 1) {
+		printString("yes");
+	}
+	if (index == 0x04) {
+		printString("masuk");
 	}
 	else {
 		printString("noob");
@@ -47,22 +51,29 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	AL = (char) (AX); 
 	AH = (char) (AX >> 8); 
 	switch (AL) { 
-	case 0x00: 
-		printString(BX); 
-		break; 
-	case 0x01: 
-		readString(BX); 
-		break; 
-	case 0x02: 
-		readSector(BX, CX); 
-		break; 
-	case 0x03: 
-		writeSector(BX, CX); 
-		break; 
-	default: 
-		printString("Invalid interrupt"); 
+		case 0x00: 
+			printString(BX); 
+			break; 
+		case 0x01: 
+			readString(BX); 
+			break; 
+		case 0x02: 
+			readSector(BX, CX); 
+			break; 
+		case 0x03: 
+			writeSector(BX, CX); 
+			break; 
+		case 0x04: 
+			readFile(BX, CX, DX, AH); 
+			break; 
+		case 0x05: 
+			writeFile(BX, CX, DX, AH); 
+			break;
+		default: 
+			printString("Invalid interrupt"); 
 	} 
 }
+
 
 
 void printString(char *string) {
@@ -165,7 +176,7 @@ int strCompare(char *a, char *b, int length) {
 		if (a[i] != b[i]) {
 			return 0;
 		}
-		if (a[i] == 0x0 || b[i] == 0x0) {
+		if (a[i] == 0x0) {
 			return 1;
 		}
 	}
@@ -240,14 +251,20 @@ void getFileNameFromPath(char *path, char *fileName) {
 
 	j = 0;
 	for (i = 0; path[i] != 0x0; i++) {
-		if (path[i] != '/') {
+		if (path[i] == '\n') {
+			break;
+		}
+		else if (path[i] != '/') {
 			fileName[j] = path[i];
 			j++;
 		}
 		else {
-			clear(fileName, 14);
 			j = 0;
 		}
+	}
+
+	for (; j < 14; j++) {
+		fileName[j] = 0x0;
 	}
 }
 
@@ -258,12 +275,16 @@ void searchFile(char *path, char parentIndex, char *index, char *result) {
 	int dirResult;
 	int fileIndex;
 	
+	clear(files, 1024);
+	clear(fileName, 14);
+
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 
 	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirResult);
 	getFileNameFromPath(path, fileName);
 
+	printString(fileName);
 	*result = 0;
 	*index = 0;
 	if (dirResult == 1) {
@@ -275,5 +296,44 @@ void searchFile(char *path, char parentIndex, char *index, char *result) {
 				break;
 			}
 		}
+	}
+}
+
+void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
+	char map[512];
+	char files[1024];
+	char sector[512];
+}
+
+void readFile(char *buffer, char *path, int *result, char parentIndex) {
+	char map[512];
+	char files[1024];
+	char sectors[512];
+	int fileExist;
+	int fileIndex;
+	int i, sectorIdx;
+
+	readSector(map, 0x100);
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+	readSector(sectors, 0x103);
+
+	searchFile(path, parentIndex, &fileIndex, &fileExist);
+
+	if (fileExist) {
+		*result = 0;
+		sectorIdx = files[fileIndex * 16 + 1];
+		for (i = 0; i < 16; i++)
+		{
+			if (sectors[sectorIdx * 16 + i] != 0x0) {
+				readSector(buffer + (i * 512), sectors[sectorIdx]);
+			}
+			else {
+				break;
+			}
+		}
+	}
+	else {
+		*result = -1;
 	}
 }

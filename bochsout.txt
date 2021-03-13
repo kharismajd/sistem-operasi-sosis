@@ -34,45 +34,45 @@
 00000000000i[      ]   Sound support: SB16 ES1370
 00000000000i[      ]   USB support: UHCI OHCI EHCI xHCI
 00000000000i[      ]   VGA extension support: vbe cirrus voodoo
-00000000000i[MEM0  ] allocated memory at 0x7f61bc6af010. after alignment, vector=0x7f61bc6b0000
+00000000000i[MEM0  ] allocated memory at 0x7f27e62e4010. after alignment, vector=0x7f27e62e5000
 00000000000i[MEM0  ] 32,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=256
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/share/bochs/BIOS-bochs-latest')
-00000000000i[      ] lt_dlhandle is 0x55ce64ae12c0
+00000000000i[      ] lt_dlhandle is 0x557bf26022c0
 00000000000i[PLUGIN] loaded plugin libbx_hdimage.so
-00000000000i[      ] lt_dlhandle is 0x55ce65122020
+00000000000i[      ] lt_dlhandle is 0x557bf2c43020
 00000000000i[PLUGIN] loaded plugin libbx_soundalsa.so
 00000000000i[WAVOUT] ALSA: opened default PCM output device
 00000000000i[WAVOUT] changed sample rate to 44101
-00000000000i[      ] lt_dlhandle is 0x55ce6513c5f0
+00000000000i[      ] lt_dlhandle is 0x557bf2c5d5f0
 00000000000i[PLUGIN] loaded plugin libbx_pci.so
-00000000000i[      ] lt_dlhandle is 0x55ce65122bd0
+00000000000i[      ] lt_dlhandle is 0x557bf2c43bd0
 00000000000i[PLUGIN] loaded plugin libbx_pci2isa.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514a1b0
+00000000000i[      ] lt_dlhandle is 0x557bf2c6b1b0
 00000000000i[PLUGIN] loaded plugin libbx_usb_uhci.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514c870
+00000000000i[      ] lt_dlhandle is 0x557bf2c6d820
 00000000000i[PLUGIN] loaded plugin libbx_acpi.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514d0a0
+00000000000i[      ] lt_dlhandle is 0x557bf2c6e050
 00000000000i[PLUGIN] loaded plugin libbx_hpet.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514df10
+00000000000i[      ] lt_dlhandle is 0x557bf2c6eec0
 00000000000i[PLUGIN] loaded plugin libbx_cmos.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514e870
+00000000000i[      ] lt_dlhandle is 0x557bf2c6f820
 00000000000i[PLUGIN] loaded plugin libbx_dma.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514f2c0
+00000000000i[      ] lt_dlhandle is 0x557bf2c70270
 00000000000i[PLUGIN] loaded plugin libbx_pic.so
-00000000000i[      ] lt_dlhandle is 0x55ce6514fb20
+00000000000i[      ] lt_dlhandle is 0x557bf2c70ad0
 00000000000i[PLUGIN] loaded plugin libbx_pit.so
-00000000000i[      ] lt_dlhandle is 0x55ce65150520
+00000000000i[      ] lt_dlhandle is 0x557bf2c714d0
 00000000000i[PLUGIN] loaded plugin libbx_vga.so
-00000000000i[      ] lt_dlhandle is 0x55ce65150d80
+00000000000i[      ] lt_dlhandle is 0x557bf2c71d30
 00000000000i[PLUGIN] loaded plugin libbx_floppy.so
-00000000000i[      ] lt_dlhandle is 0x55ce65151930
+00000000000i[      ] lt_dlhandle is 0x557bf2c728e0
 00000000000i[PLUGIN] loaded plugin libbx_ioapic.so
-00000000000i[      ] lt_dlhandle is 0x55ce65152130
+00000000000i[      ] lt_dlhandle is 0x557bf2c730e0
 00000000000i[PLUGIN] loaded plugin libbx_keyboard.so
-00000000000i[      ] lt_dlhandle is 0x55ce65152900
+00000000000i[      ] lt_dlhandle is 0x557bf2c738b0
 00000000000i[PLUGIN] loaded plugin libbx_harddrv.so
-00000000000i[      ] lt_dlhandle is 0x55ce65154b60
+00000000000i[      ] lt_dlhandle is 0x557bf2c75b10
 00000000000i[PLUGIN] loaded plugin libbx_pci_ide.so
 00000000000i[PLUGIN] init_dev of 'pci' plugin device by virtual method
 00000000000i[DEV   ] i440FX PMC present at device 0, function 0
@@ -80,7 +80,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sat Mar 13 22:40:18 2021 (time0=1615650018)
+00000000000i[CMOS  ] Setting initial clock to: Sun Mar 14 01:07:05 2021 (time0=1615658825)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -265,5 +265,5 @@
 00002009681i[BXVGA ] VBE known Display Interface b0c0
 00002009713i[BXVGA ] VBE known Display Interface b0c5
 00002012356i[VBIOS ] VBE Bios $Id: vbe.c 228 2020-01-02 23:09:02Z vruppert $
-00002257270i[XGUI  ] charmap update. Font is 9 x 16
+00002234280i[XGUI  ] charmap update. Font is 9 x 16
 00032863656i[BIOS  ] Booting from 0000:7c00

@@ -12,7 +12,9 @@ void writeSector(char *buffer, int sector);
 int mod(int a, int b);
 int div(int a, int b);
 int strCompare(char *a, char *b, int length);
-void getParentFromPath(char *path, char *fileSector, char parentIndex, char *dirIndex, char *fileName, int *result);
+void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result);
+void getFileNameFromPath(char *path, char *fileName);
+void searchFile(char *path, char parentIndex, char *index, char *result);
 
 int main() {
 	char files[1024];
@@ -25,7 +27,9 @@ int main() {
 	readSector(files + 512, 0x102);
 
 	readString(&path);
-	getParentFromPath(path, files, 0x00, &dirIndex, fileName, &result);
+
+	getDirIdxFromPath(path, 0x00, &dirIndex, &result);
+	getFileNameFromPath(path, fileName);
 
 	//test
 	if (dirIndex == 0x03) {
@@ -161,50 +165,65 @@ int strCompare(char *a, char *b, int length) {
 		if (a[i] != b[i]) {
 			return 0;
 		}
-		if (a[i] == 0 || b[i] == 0) {
+		if (a[i] == 0x0 || b[i] == 0x0) {
 			return 1;
 		}
 	}
 	return 1;
 }
 
-void getParentFromPath(char *path, char *fileSector, char parentIndex, char *dirIndex, char *fileName, int *result) {
+void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result) {
+	char files[1024];
 	char dirName[14];
-	char pathfileName[14];
 	int fileIndex;
 	int found;
-	int i;
-	int j;
-	int k;
+	int i, j;
 
+	clear(files, 1024);
 	clear(dirName, 14);
-	clear(pathfileName, 14);
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
 
 	*result = 1;
 	*dirIndex = parentIndex;
+	i = 0;
 	j = 0;
-	for (i = 0; path[i] != 0x0; i++) {
+	if (path[0] == '/') {
+		i += 1;
+		*dirIndex = 0xFF;
+	}
+	else if (path[0] == '.' && path[1] == '/') {
+		i += 2;
+	}
+	
+	for (; path[i] != 0x0; i++) {
     	if (path[i] != '/'){
-    		pathfileName[j] = path[i];
+    		dirName[j] = path[i];
 			j++;
-    	} else {
+    	} 
+		else {
     		for (; j < 14; j++) {
-        		pathfileName[j] = 0x0;
-      		}
-
-      		for (k = 0; k < 14; k++) {
-        		dirName[k] = pathfileName[k];
+        		dirName[j] = 0x0;
       		}
 			
 			found = 0;
-			for (fileIndex = 0; fileIndex < 64; fileIndex++) {
-				if (fileSector[fileIndex * 16] == *dirIndex && fileSector[fileIndex * 16 + 1] == 0xFF && strCompare(dirName, fileSector + fileIndex * 16 + 2, 14)) {
-					*dirIndex = fileIndex;
+			if (dirName[0] == '.' && dirName[1] == '.') {
+				if (*dirIndex != 0xFF) {
+					*dirIndex = files[*dirIndex * 16];
 					found = 1;
-					break;
 				}
 			}
-			
+			else {
+				for (fileIndex = 0; fileIndex < 64; fileIndex++) {
+					if (files[fileIndex * 16] == *dirIndex && files[fileIndex * 16 + 1] == 0xFF && strCompare(dirName, files + fileIndex * 16 + 2, 14)) {
+						*dirIndex = fileIndex;
+						found = 1;
+						break;
+					}
+				}
+			}
+
 			if (found) {
 				j = 0;
 			}
@@ -214,12 +233,47 @@ void getParentFromPath(char *path, char *fileSector, char parentIndex, char *dir
 			}	
     	}
   	}
+}
 
-  	for (;j<14;j++) {
-    	pathfileName[j] = 0x0;
-  	}
+void getFileNameFromPath(char *path, char *fileName) {
+	int i, j;
 
-	for (i = 0; i < 14; i++) {
-        fileName[i] = pathfileName[i];
-    }
+	j = 0;
+	for (i = 0; path[i] != 0x0; i++) {
+		if (path[i] != '/') {
+			fileName[j] = path[i];
+			j++;
+		}
+		else {
+			clear(fileName, 14);
+			j = 0;
+		}
+	}
+}
+
+void searchFile(char *path, char parentIndex, char *index, char *result) {
+	char files[1024];
+	char fileName[14];
+	char dirIdx;
+	int dirResult;
+	int fileIndex;
+	
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirResult);
+	getFileNameFromPath(path, fileName);
+
+	*result = 0;
+	*index = 0;
+	if (dirResult == 1) {
+		for (fileIndex = 0; fileIndex < 64; fileIndex++)
+		{
+			if (files[fileIndex * 16] == dirIdx && files[fileIndex * 16 + 1] != 0xFF && strCompare(fileName, files + fileIndex * 16 + 2, 14)) {
+				*index = fileIndex;
+				*result = 1;
+				break;
+			}
+		}
+	}
 }

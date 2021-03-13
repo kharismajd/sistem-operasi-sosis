@@ -279,7 +279,6 @@ void searchFile(char *path, char parentIndex, char *index, char *result) {
 	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirResult);
 	getFileNameFromPath(path, fileName);
 
-	printString(fileName);
 	*result = 0;
 	*index = 0;
 	if (dirResult == 1) {
@@ -298,6 +297,116 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	char map[512];
 	char files[1024];
 	char sector[512];
+	char fileName[14];
+	char dirIdx;
+
+	int emptyFilesIdx;
+	int emptySectorIdx;
+	int emptyMapIdx;
+	int fileExist;
+	int fileIndex;
+	int mapIdx;
+	int sectorIdx;
+	int freeSectorCount;
+	int sectorNeededCount;
+	int bufferIdx;
+	int fileExist;
+	int dummyFileIdx;
+	int dirValid;
+	int i;
+
+	readSector(map, 0x100);
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+	readSector(sector, 0x103);
+
+	emptyFilesIdx = -1;
+	for (fileIndex = 0; fileIndex < 64; fileIndex++)
+	{
+		if (files[fileIndex * 16] == 0x0 && files[fileIndex * 16 + 1] == 0x0 && files[fileIndex * 16 + 2] == 0x0) {
+			emptyFilesIdx = fileIndex;
+			break;
+		}
+	}
+
+	if (emptyFilesIdx == -1) {
+		*sectors = -2;
+		return;
+	}
+
+	freeSectorCount = 0;
+	for (mapIdx = 0; mapIdx < 512; mapIdx++) {
+		if (map[mapIdx] == 0x0) {
+			freeSectorCount += 1;
+		}
+	}
+	
+	bufferIdx = 0;
+	sectorNeededCount = 0;
+	while (buffer[bufferIdx] != 0x0) {
+		bufferIdx++;
+	}
+	sectorNeededCount = 1 + div(bufferIdx, 512);
+
+	if (sectorNeededCount > freeSectorCount) {
+		*sectors = -3;
+		return;
+	}
+
+	emptySectorIdx = -1;
+	for (sectorIdx = 0; sectorIdx < 32; sectorIdx++)
+	{
+		if (sector[sectorIdx * 16] = 0x0) {
+			emptySectorIdx = sectorIdx;
+			break;
+		}
+	}
+	
+	if (emptySectorIdx == -1) {
+		*sectors = -3;
+		return;
+	}
+
+	searchFile(path, parentIndex, &dummyFileIdx, &fileExist);
+	if (fileExist) {
+		*sectors = -1;
+		return;
+	}
+
+	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirValid);
+	if (!dirValid) {
+		*sectors = -4;
+		return;
+	}
+
+	clear(files + emptyFilesIdx * 16, 16);
+	files[emptyFilesIdx * 16] = dirIdx;
+	files[emptyFilesIdx * 16 + 1] = emptySectorIdx;
+	getFileNameFromPath(path, fileName);
+	for (i = 0; i < 14; i++)
+	{
+		files[emptyFilesIdx * 16 + 2 + i] = fileName[i];
+	}
+
+	for (i = 0; i < sectorNeededCount; i++)
+	{
+		emptyMapIdx = 0;
+		for (mapIdx = 0; mapIdx < 512; mapIdx++)
+		{
+			if (map[mapIdx] == 0x0) {
+				emptyMapIdx = mapIdx;
+				map[mapIdx] = 0xFF;
+				break;
+			}
+		}
+		sector[emptySectorIdx * 16 + i] = emptyMapIdx;
+		writeSector(buffer + (i * 512), emptyMapIdx);
+	}
+	
+	writeSector(map, 0x100);
+	writeSector(files, 0x101);
+	writeSector(files + 512, 0x102);
+	writeSector(sector, 0x103);
 }
 
 void readFile(char *buffer, char *path, int *result, char parentIndex) {

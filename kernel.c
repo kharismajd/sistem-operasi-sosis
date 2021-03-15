@@ -20,29 +20,22 @@ void getFileNameFromPath(char *path, char *fileName);
 void searchFile(char *path, char parentIndex, char *index, char *result);
 
 int main() {
-	char files[1024];
-	char fileName[14];
+	char buffer[512];
 	char path[100];
 	char index;
 	int result;
 
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
 	readString(&path);
-
-	searchFile(path, 0x00, &index, &result);
+	readString(&buffer);
+	writeFile(buffer, path, &result, 0xFF);
 	//test
-	if (result == 1) {
+	if (result == 0) {
 		printString("yes");
-	}
-	if (index == 0x04) {
-		printString("masuk");
+		printString(buffer);
 	}
 	else {
 		printString("noob");
 	}
-
 	while(1){}
 }
 
@@ -310,7 +303,6 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	int freeSectorCount;
 	int sectorNeededCount;
 	int bufferIdx;
-	int fileExist;
 	int dummyFileIdx;
 	int dirValid;
 	int i;
@@ -403,6 +395,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 		writeSector(buffer + (i * 512), emptyMapIdx);
 	}
 	
+	*sectors = 0;
 	writeSector(map, 0x100);
 	writeSector(files, 0x101);
 	writeSector(files + 512, 0x102);

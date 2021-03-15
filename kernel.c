@@ -356,7 +356,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	emptySectorIdx = -1;
 	for (sectorIdx = 0; sectorIdx < 32; sectorIdx++)
 	{
-		if (sector[sectorIdx * 16] = 0x0) {
+		if (sector[sectorIdx * 16] == 0x0) {
 			emptySectorIdx = sectorIdx;
 			break;
 		}

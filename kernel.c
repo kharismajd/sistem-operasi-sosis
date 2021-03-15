@@ -430,7 +430,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex) {
 		for (i = 0; i < 16; i++)
 		{
 			if (sectors[sectorIdx * 16 + i] != 0x0) {
-				readSector(buffer + (i * 512), sectors[sectorIdx]);
+				readSector(buffer + (i * 512), sectors[sectorIdx * 16 + i]);
 			}
 			else {
 				break;

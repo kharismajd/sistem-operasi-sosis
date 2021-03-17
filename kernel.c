@@ -38,26 +38,15 @@ int main() {
 
 	i = 0;
 
-	printShell("abcd");
-
-	/*while(1){
+	printLogo();
+	while(1){
 		do {
-			interrupt(0x21, 0x2, directoryBuffer, 0x101, 0);
-			interrupt(0x21, 0x2, directoryBuffer + 512, 0x102, 0);
-			interrupt(0x21, 0x00, "\r\nRoot", 0, 0);
-			if (!(dirBefore == 0)) {
-				while (!(currentDirName[itrDirName] == '/')) {
-					currentDirName[itrDirName--] = '\0';
-				}
-				currentDirName[itrDirName] = '\0';
-				dirBefore = 0;
-				
-			}
-			interrupt(0x21, 0x00, currentDirName, 0, 0);
-			interrupt(0x21, 0x00, ">", 0, 0);
-			interrupt(0x21, 0x01, input, 1, 0);			
+			readSector(directoryBuffer, 0x101);
+			readSector(directoryBuffer + 512, 0x102);
+			printShell(currentDir);
+			readString(input);			
 		} while (strCompare(input, "", 0));
-	}*/
+	}
 
 	return 0;
 }
@@ -549,29 +538,33 @@ void printShell(char parentIndex) {
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 
-	clear(stack, 64);
+	
 	dirIdx = parentIndex;
+	clear(stack, 64);
 	stack[0] = dirIdx;
 
 	i = 0;
-	while (files[dirIdx * 16] != 0xFF) {
+	while (dirIdx != 0xFF) {
 		i++;
 		dirIdx = files[dirIdx * 16];
 		stack[i] = dirIdx;
 	}
 
-	printString("Root");
 	while (i >= 0) {
 		currIdx = stack[i];
 
-		clear(fileName, 14);
-		for(j = 0; j < 14; j++) {
-			fileName[j] = files[currIdx * 16 + 2 + j];
+		if (currIdx == 0xFF) {
+			printString("Root");
 		}
+		else {
+			clear(fileName, 14);
+			for(j = 0; j < 14; j++) {
+				fileName[j] = files[currIdx * 16 + 2 + j];
+			}
 
-		printString("\\");
-		printString(fileName);
-
+			printString("\\");
+			printString(fileName);
+		}
 		i--;
 	}
 	printString(">");

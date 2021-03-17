@@ -77,10 +77,10 @@ void main(int argc, char* argv[]) {
 	files[emptyFileIndex * 16] = 0xFF;
 	files[emptyFileIndex * 16 + 1] = emptySectorIndex;
 	for (i = 0; i < 14; i++) {
-		if (argv[2][i] == 0) {
+		if (argv[1][i] == 0) {
 			break;
 		}
-		files[emptyFileIndex * 16 + 2 + i] = argv[2][i];
+		files[emptyFileIndex * 16 + 2 + i] = argv[1][i];
 	}
 
 	int sectcount = 0;
@@ -105,7 +105,7 @@ void main(int argc, char* argv[]) {
 		map[emptyMapIndex] = 0xFF;
 		sectors[emptySectorIndex] = emptyMapIndex;
 		
-		printf("File %s diletakan pada sektor %d\n", argv[2], emptyMapIndex);
+		printf("File %s diletakan pada sektor %d\n", argv[1], emptyMapIndex);
 
 		fseek(system, emptyMapIndex * 512, SEEK_SET);
 		for (i = 0; i < 512; i++) {

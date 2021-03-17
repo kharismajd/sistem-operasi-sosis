@@ -9,6 +9,8 @@ void readSector(char *buffer, int sector);
 void writeSector(char *buffer, int sector);
 void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
 void readFile(char *buffer, char *path, int *result, char parentIndex);
+void cat(char *path, char parentIndex);
+void ln(char *fromPath, char *toPath, char parentIndex);
 
 
 /* Utils */
@@ -20,22 +22,9 @@ void getFileNameFromPath(char *path, char *fileName);
 void searchFile(char *path, char parentIndex, char *index, char *result);
 
 int main() {
-	char buffer[512];
-	char path[100];
-	char index;
-	int result;
-
-	readString(&path);
-	readString(&buffer);
-	writeFile(buffer, path, &result, 0xFF);
-	//test
-	if (result == 0) {
-		printString("yes");
-		printString(buffer);
-	}
-	else {
-		printString("noob");
-	}
+	cat("asu", 0x00);
+	ln("asu", "satu/cobaln", 0x00);
+	cat("satu/cobaln", 0x00);
 	while(1){}
 }
 
@@ -433,4 +422,73 @@ void readFile(char *buffer, char *path, int *result, char parentIndex) {
 	else {
 		*result = -1;
 	}
+}
+
+void cat(char *path, char parentIndex) {
+	char buffer[8192];
+	int result;
+
+	readFile(buffer, path, &result, parentIndex);
+
+	if (result == 0) {
+		printString(buffer);
+	}
+	else {
+		printString("Tidak ada file dengan nama tersebut pada directory");
+	}
+	printString("\r\n");
+}
+
+void ln(char *fromPath, char *toPath, char parentIndex) {
+	char files[1024];
+	char fileName[14];
+
+	char fileIndex;
+	char dummyFileIndex;
+	char emptyFilesIndex;
+	char dirIndex;
+	char fileSector;
+	
+	int fromFileExist;
+	int toFileExist;
+	int dirValid;
+	int i;
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	searchFile(toPath, parentIndex, &dummyFileIndex, &toFileExist);
+	if (toFileExist) {
+		printString("sudah ada file dengan nama tersebut pada destinasi\r\n");
+		return;
+	}
+
+	searchFile(fromPath, parentIndex, &fileIndex, &fromFileExist);
+	if (fromFileExist) {
+		getDirIdxFromPath(toPath, parentIndex, &dirIndex, &dirValid);
+		if (dirValid) {
+			emptyFilesIndex = -1;
+			for(i = 0; i < 64; i++) {
+				if (files[i * 16] == 0x0 && files[i * 16 + 1] == 0x0 && files[i * 16 + 2] == 0x0) {
+					emptyFilesIndex = i;
+					break;
+				}
+			}
+
+			if (emptyFilesIndex == -1) {
+				return;
+			}
+
+			clear(files + emptyFilesIndex * 16, 16);
+			getFileNameFromPath(toPath, fileName);
+			files[emptyFilesIndex * 16] = dirIndex;
+			files[emptyFilesIndex * 16 + 1] = files[fileIndex * 16 + 1];
+			for(i = 0; i < 14; i++) {
+				files[emptyFilesIndex * 16 + 2 + i] = fileName[i];
+			}
+		} 
+	}
+
+	writeSector(files, 0x101);
+	writeSector(files + 512, 0x102);
 }

@@ -84,7 +84,7 @@ int main() {
 				ln(arg1, arg2, currentDir);
 			}
 			else {
-				printString("Bad command\r\n");
+				printString("Tidak ada file operand\r\n");
 			}
 		}
 	}

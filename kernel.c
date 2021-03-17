@@ -21,11 +21,46 @@ void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result
 void getFileNameFromPath(char *path, char *fileName);
 void searchFile(char *path, char parentIndex, char *index, char *result);
 
+int currentDir, dirBefore, dirGanti, itrDirName;
+char currentDirName[128], directoryBuffer[1024];
+currentDir = 0xFF;
+char currentDirName[128], directoryBuffer[1024];
+
 int main() {
 	cat("asu", 0x00);
 	ln("asu", "../z/satu/dua/./cobaln", 0x00);
 	cat("satu/dua/cobaln", 0x00);
-	while(1){}
+
+	char arg[14];
+	char* input;
+	int suc, i;
+	currentDir = 0xFF;
+	itrDirName = 0;
+	dirGanti = 0;
+	dirBefore = 0;
+
+	i = 0;
+
+	while(1){
+		do {
+			interrupt(0x21, 0x2, directoryBuffer, 0x101, 0);
+			interrupt(0x21, 0x2, directoryBuffer + 512, 0x102, 0);
+			interrupt(0x21, 0x00, "\r\nRoot", 0, 0);
+			if (!(dirBefore == 0)) {
+				while (!(currentDirName[itrDirName] == '/')) {
+					currentDirName[itrDirName--] = '\0';
+				}
+				currentDirName[itrDirName] = '\0';
+				dirBefore = 0;
+				
+			}
+			interrupt(0x21, 0x00, currentDirName, 0, 0);
+			interrupt(0x21, 0x00, ">", 0, 0);
+			interrupt(0x21, 0x01, input, 1, 0);			
+		} while (strCompare(input, "", 0));
+	}
+
+	return 0;
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) { 

@@ -343,6 +343,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	}
 
 	if (emptyFilesIdx == -1) {
+		printString("Tidak cukup entri di files\r\n");
 		*sectors = -2;
 		return;
 	}
@@ -362,6 +363,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	sectorNeededCount = 1 + div(bufferIdx, 512);
 
 	if (sectorNeededCount > freeSectorCount) {
+		printString("Tidak cukup sektor kosong\r\n");
 		*sectors = -3;
 		return;
 	}
@@ -376,18 +378,21 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 	}
 	
 	if (emptySectorIdx == -1) {
+		printString("Tidak cukup sektor kosong\r\n");
 		*sectors = -3;
 		return;
 	}
 
 	searchFile(path, parentIndex, &dummyFileIdx, &fileExist);
 	if (fileExist) {
+		printString("File sudah ada\r\n");
 		*sectors = -1;
 		return;
 	}
 
 	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirValid);
 	if (!dirValid) {
+		printString("Folder tidak valid\r\n");
 		*sectors = -4;
 		return;
 	}
@@ -452,6 +457,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex) {
 		}
 	}
 	else {
+		printString("File tidak ditemukan\r\n");
 		*result = -1;
 	}
 }
@@ -465,10 +471,6 @@ void cat(char *path, char parentIndex) {
 	if (result == 0) {
 		printString(buffer);
 	}
-	else {
-		printString("Tidak ada file dengan nama tersebut pada directory");
-	}
-	printString("\r\n");
 }
 
 void ln(char *fromPath, char *toPath, char parentIndex) {
@@ -491,7 +493,7 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 
 	searchFile(toPath, parentIndex, &dummyFileIndex, &toFileExist);
 	if (toFileExist) {
-		printString("sudah ada file dengan nama tersebut pada destinasi\r\n");
+		printString("Sudah ada file dengan nama tersebut pada destinasi\r\n");
 		return;
 	}
 
@@ -508,7 +510,7 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 			}
 
 			if (emptyFilesIndex == -1) {
-				printString("sector files sudah penuh\r\n");
+				printString("Tidak cukup entri di files\r\n");
 				return;
 			}
 

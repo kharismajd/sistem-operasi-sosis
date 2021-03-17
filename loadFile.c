@@ -72,12 +72,15 @@ void main(int argc, char* argv[]) {
 	
 	// clear
 	for (i = 0; i < 14; i++) {
-		files[fileIndex * 16 + 2 + i] = 0x0;
+		files[emptyFileIndex * 16 + 2 + i] = 0x0;
 	}
-	files[fileIndex * 16] = 0xFF;
-	files[fileIndex * 16 + 1] = emptySectorIndex;
+	files[emptyFileIndex * 16] = 0xFF;
+	files[emptyFileIndex * 16 + 1] = emptySectorIndex;
 	for (i = 0; i < 14; i++) {
-		files[fileIndex * 16 + 2 + i] = argv[2][i];
+		if (argv[2][i] == 0) {
+			break;
+		}
+		files[emptyFileIndex * 16 + 2 + i] = argv[2][i];
 	}
 
 	int sectcount = 0;
@@ -136,4 +139,6 @@ void main(int argc, char* argv[]) {
 
 	fclose(system);
 	fclose(file_to_load);
+
+	return;
 }

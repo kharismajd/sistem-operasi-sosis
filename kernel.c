@@ -23,8 +23,8 @@ void searchFile(char *path, char parentIndex, char *index, char *result);
 
 int main() {
 	cat("asu", 0x00);
-	ln("asu", "satu/cobaln", 0x00);
-	cat("satu/cobaln", 0x00);
+	ln("asu", "../z/satu/dua/./cobaln", 0x00);
+	cat("satu/dua/cobaln", 0x00);
 	while(1){}
 }
 
@@ -184,9 +184,6 @@ void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result
 		i += 1;
 		*dirIndex = 0xFF;
 	}
-	else if (path[0] == '.' && path[1] == '/') {
-		i += 2;
-	}
 	
 	for (; path[i] != 0x0; i++) {
     	if (path[i] != '/'){
@@ -199,7 +196,10 @@ void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result
       		}
 			
 			found = 0;
-			if (dirName[0] == '.' && dirName[1] == '.') {
+			if (dirName[0] == '.' && dirName[1] == 0x0) {
+				found = 1;
+			}
+			else if (dirName[0] == '.' && dirName[1] == '.' && dirName[2] == 0x0) {
 				if (*dirIndex != 0xFF) {
 					*dirIndex = files[*dirIndex * 16];
 					found = 1;

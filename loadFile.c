@@ -135,7 +135,7 @@ void main(int argc, char* argv[]) {
 		fputc(sectors[i], system);
 	}
 
-	printf("Load file berhasil");
+	printf("Load file berhasil\n");
 
 	fclose(system);
 	fclose(file_to_load);

@@ -20,6 +20,7 @@ int strCompare(char *a, char *b, int length);
 void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result);
 void getFileNameFromPath(char *path, char *fileName);
 void searchFile(char *path, char parentIndex, char *index, char *result);
+void printShell(char parentIndex);
 
 int currentDir, dirBefore, dirGanti, itrDirName;
 char currentDirName[128], directoryBuffer[1024];
@@ -27,10 +28,6 @@ currentDir = 0xFF;
 char currentDirName[128], directoryBuffer[1024];
 
 int main() {
-	cat("asu", 0x00);
-	ln("asu", "../z/satu/dua/./cobaln", 0x00);
-	cat("satu/dua/cobaln", 0x00);
-
 	char arg[14];
 	char* input;
 	int suc, i;
@@ -43,6 +40,7 @@ int main() {
 
 	while(1){
 		do {
+			printString("a");
 			interrupt(0x21, 0x2, directoryBuffer, 0x101, 0);
 			interrupt(0x21, 0x2, directoryBuffer + 512, 0x102, 0);
 			interrupt(0x21, 0x00, "\r\nRoot", 0, 0);
@@ -50,6 +48,7 @@ int main() {
 				while (!(currentDirName[itrDirName] == '/')) {
 					currentDirName[itrDirName--] = '\0';
 				}
+				printString("b");
 				currentDirName[itrDirName] = '\0';
 				dirBefore = 0;
 				
@@ -527,4 +526,45 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 
 	writeSector(files, 0x101);
 	writeSector(files + 512, 0x102);
+}
+
+void printShell(char parentIndex) {
+	char files[1024];
+	char fileName[14];
+	char stack[64];
+
+	char dirIdx;
+	char currIdx;
+
+	int i, j;
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	clear(stack, 64);
+	dirIdx = parentIndex;
+	stack[0] = dirIdx;
+
+	i = 0;
+	while (files[dirIdx * 16] != 0xFF) {
+		i++;
+		dirIdx = files[dirIdx * 16];
+		stack[i] = dirIdx;
+	}
+
+	printString("Root");
+	while (i >= 0) {
+		currIdx = stack[i];
+
+		clear(fileName, 14);
+		for(j = 0; j < 14; j++) {
+			fileName[j] = files[currIdx * 16 + 2 + j];
+		}
+
+		printString("\\");
+		printString(fileName);
+
+		i--;
+	}
+	printString(">");
 }

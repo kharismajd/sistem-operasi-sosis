@@ -38,7 +38,9 @@ int main() {
 
 	i = 0;
 
-	while(1){
+	printShell("abcd");
+
+	/*while(1){
 		do {
 			interrupt(0x21, 0x2, directoryBuffer, 0x101, 0);
 			interrupt(0x21, 0x2, directoryBuffer + 512, 0x102, 0);
@@ -55,7 +57,7 @@ int main() {
 			interrupt(0x21, 0x00, ">", 0, 0);
 			interrupt(0x21, 0x01, input, 1, 0);			
 		} while (strCompare(input, "", 0));
-	}
+	}*/
 
 	return 0;
 }

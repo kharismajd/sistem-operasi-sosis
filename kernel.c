@@ -9,6 +9,8 @@ void readSector(char *buffer, int sector);
 void writeSector(char *buffer, int sector);
 void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
 void readFile(char *buffer, char *path, int *result, char parentIndex);
+void cd(char *path, char *parentIndex);
+void ls(char parentIndex);
 void cat(char *path, char parentIndex);
 void ln(char *fromPath, char *toPath, char parentIndex);
 
@@ -22,27 +24,24 @@ void getFileNameFromPath(char *path, char *fileName);
 void searchFile(char *path, char parentIndex, char *index, char *result);
 void printShell(char parentIndex);
 
-int currentDir, dirBefore, dirGanti, itrDirName;
-char currentDirName[128], directoryBuffer[1024];
+int currentDir;
+char files[1024];
 
 int main() {
 	char arg1[64];
 	char arg2[64];
 	char input[128];
 	int arg1Idx, arg2Idx;
-	int suc, i;
+	int i;
 	int badCommand = 0;
 	currentDir = 0xFF;
-	itrDirName = 0;
-	dirGanti = 0;
-	dirBefore = 0;
 
 	printLogo();
 
 	printString("\n\n\n\n");
 	while(1){
-		readSector(directoryBuffer, 0x101);
-		readSector(directoryBuffer + 512, 0x102);
+		readSector(files, 0x101);
+		readSector(files + 512, 0x102);
 
 		printShell(currentDir);
 		
@@ -57,12 +56,28 @@ int main() {
 		arg1Idx = 0;
 		arg2Idx = 0;
 
-		if (strCompare(input, "cat ", 4)) {
-			for (i = 4; input[i] != 0x0; i++) {
-				arg1[arg1Idx] = input[i];
-				arg1Idx++;
+		if (strCompare(input, "cd ", 3)) {
+			if (input[3] != 0x0) {
+				for(i = 3; input[i] != 0x0; i++) {
+					arg1[arg1Idx] = input[i];
+					arg1Idx++;
+				}
+				cd(arg1, &currentDir);
 			}
-			cat(arg1, currentDir);
+		}
+		else if (strCompare(input, "ls", 2)) {
+			if (input[2] == 0x0 || input[2] == " ") {
+				ls(currentDir);
+			}
+		}
+		else if (strCompare(input, "cat ", 4)) {
+			if (input[4] != 0x0) {
+				for (i = 4; input[i] != 0x0; i++) {
+					arg1[arg1Idx] = input[i];
+					arg1Idx++;
+				}
+				cat(arg1, currentDir);
+			}
 		}
 		else if (strCompare(input, "ln ", 3)) {
 			for (i = 3; input[i] != ' '; i++) {
@@ -87,6 +102,7 @@ int main() {
 				printString("Tidak ada file operand\r\n");
 			}
 		}
+		printString("\r\n");
 	}
 
 	return 0;
@@ -494,8 +510,57 @@ void readFile(char *buffer, char *path, int *result, char parentIndex) {
 	}
 }
 
-void cat(char *path, char parentIndex) {
+void cd(char *path, char *parentIndex) {
 	char files[1024];
+	char folderName[14];
+
+	char dirIndex;
+	char fileIndex;
+	int dirValid;
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	getDirIdxFromPath(path, *parentIndex, &dirIndex, &dirValid);
+	getFileNameFromPath(path, folderName);
+	if (folderName[0] == 0x0) {
+		*parentIndex = dirIndex;
+		return;
+	}
+	else {
+		for (fileIndex = 0; fileIndex < 64; fileIndex++) {
+			if (files[fileIndex * 16] == dirIndex && files[fileIndex * 16 + 1] == 0xFF && strCompare(folderName, files + fileIndex * 16 + 2, 14)) {
+				*parentIndex = fileIndex;
+				return;
+			}
+		}
+		printString(folderName);
+		printString(" bukan sebuah folder/tidak ada pada direktori\r\n");
+	}
+}
+
+void ls(char parentIndex) {
+	char files[1024];
+	char fileName[14];
+
+	int fileIndex, i;
+
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+
+	for(fileIndex = 0; fileIndex < 64; fileIndex++) {
+		if (files[fileIndex * 16] == parentIndex && files[fileIndex * 16 + 2] != 0x0) {
+			clear(fileName, 14);
+			for(i = 0; i < 14; i++) {
+				fileName[i] = files[fileIndex * 16 + 2 + i];
+			}
+			printString(fileName);
+			printString("\r\n");
+		}
+	}
+}
+
+void cat(char *path, char parentIndex) {
 	char buffer[8192];
 	char fileName[14];
 	int result;
@@ -577,10 +642,12 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 		} 
 		else {
 			printString("Folder tidak valid\r\n");
+			return;
 		}
 	}
 	else {
 		printString("File tidak ditemukan\r\n");
+		return;
 	}
 
 	writeSector(files, 0x101);

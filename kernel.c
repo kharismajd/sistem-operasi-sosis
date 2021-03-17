@@ -476,6 +476,7 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 			}
 
 			if (emptyFilesIndex == -1) {
+				printString("sector files sudah penuh\r\n");
 				return;
 			}
 

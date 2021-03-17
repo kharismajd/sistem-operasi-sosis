@@ -40,7 +40,6 @@ int main() {
 
 	while(1){
 		do {
-			printString("a");
 			interrupt(0x21, 0x2, directoryBuffer, 0x101, 0);
 			interrupt(0x21, 0x2, directoryBuffer + 512, 0x102, 0);
 			interrupt(0x21, 0x00, "\r\nRoot", 0, 0);
@@ -48,7 +47,6 @@ int main() {
 				while (!(currentDirName[itrDirName] == '/')) {
 					currentDirName[itrDirName--] = '\0';
 				}
-				printString("b");
 				currentDirName[itrDirName] = '\0';
 				dirBefore = 0;
 				

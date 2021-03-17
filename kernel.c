@@ -522,6 +522,12 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 				files[emptyFilesIndex * 16 + 2 + i] = fileName[i];
 			}
 		} 
+		else {
+			printString("Folder tidak valid");
+		}
+	}
+	else {
+		printString("File tidak ditemukan");
 	}
 
 	writeSector(files, 0x101);

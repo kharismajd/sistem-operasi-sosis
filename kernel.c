@@ -24,28 +24,56 @@ void printShell(char parentIndex);
 
 int currentDir, dirBefore, dirGanti, itrDirName;
 char currentDirName[128], directoryBuffer[1024];
-currentDir = 0xFF;
-char currentDirName[128], directoryBuffer[1024];
 
 int main() {
-	char arg[14];
-	char* input;
+	char arg1[64];
+	char arg2[64];
+	char input[128];
+	int arg1Idx, arg2Idx;
 	int suc, i;
 	currentDir = 0xFF;
 	itrDirName = 0;
 	dirGanti = 0;
 	dirBefore = 0;
 
-	i = 0;
-
 	printLogo();
 	while(1){
-		do {
-			readSector(directoryBuffer, 0x101);
-			readSector(directoryBuffer + 512, 0x102);
-			printShell(currentDir);
-			readString(input);			
-		} while (strCompare(input, "", 0));
+		readSector(directoryBuffer, 0x101);
+		readSector(directoryBuffer + 512, 0x102);
+
+		printShell(currentDir);
+		
+		clear(input, 64);
+		readString(input);		
+
+		i = 0;
+
+		clear(arg1, 32);
+		clear(arg2, 32);
+		arg1Idx = 0;
+		arg2Idx = 0;
+
+		if (strCompare(input, "cat ", 4)) {
+			for (i = 4; input[i] != 0x0; i++) {
+				arg1[arg1Idx] = input[i];
+				arg1Idx++;
+			}
+			cat(arg1, currentDir);
+		}
+		else if (strCompare(input, "ln ", 3)) {
+			for (i = 3; input[i] != ' '; i++) {
+				arg1[arg1Idx] = input[i];
+				arg1Idx++;
+			}
+
+			i++;
+			for (; input[i] != 0x0; i++) {
+				arg2[arg2Idx] = input[i];
+				arg2Idx++;
+			}
+
+			ln(arg1, arg2, currentDir);
+		}
 	}
 
 	return 0;
@@ -461,6 +489,7 @@ void cat(char *path, char parentIndex) {
 
 	if (result == 0) {
 		printString(buffer);
+		printString("\r\n");
 	}
 }
 
@@ -514,11 +543,11 @@ void ln(char *fromPath, char *toPath, char parentIndex) {
 			}
 		} 
 		else {
-			printString("Folder tidak valid");
+			printString("Folder tidak valid\r\n");
 		}
 	}
 	else {
-		printString("File tidak ditemukan");
+		printString("File tidak ditemukan\r\n");
 	}
 
 	writeSector(files, 0x101);

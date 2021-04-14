@@ -280,3 +280,33 @@ void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result
     	}
   	}
 }
+
+void delFile(char path) {
+    char mapBuffer[512], folderAndFiles[1024], sectBuffer[512];
+    int i;
+
+    // Readsector yang terujung (257 & 258)
+    interrupt(0x21, 0x02, folderAndFiles, 257, 0);
+    interrupt(0x21, 0x02, folderAndFiles + 512, 258, 0);
+
+    // Hapus path file
+    folderAndFiles[path*16] = 0x0;
+    folderAndFiles[path*16 + 1] = '\0';
+
+    // Penghapusan pada map dan sektor
+    interrupt(0x21, 0x02, &mapBuffer, 256, 0);
+    interrupt(0x21, 0x02, &sectBuffer, 259, 0);
+    i = 0;
+    while (sectBuffer[entry*16+1] != '\0' && i < 16) {
+        // Kosongkan
+        mapBuffer[sectBuffer[entry*16+1]] = 0x0;
+        sectBuffer[entry*16+i] = 0x0;
+        i++;
+    }
+
+    // Tulis kembali buffer ke sektors
+    interrupt(0x21,0x03,&folderAndFiles,257,0);
+    interrupt(0x21,0x03,folderAndFiles+512,258,0);
+    interrupt(0x21,0x03,&sectBuffer,259,0);
+    interrupt(0x21,0x03,&mapBuffer,256,0);
+}

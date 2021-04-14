@@ -1,4 +1,5 @@
 
+int isFolder(char *path, char parentIndex);
 
 int isFolder(char *path, char parentIndex) {
 	char files[1024];

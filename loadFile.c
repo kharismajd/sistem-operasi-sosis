@@ -74,7 +74,7 @@ void main(int argc, char* argv[]) {
 	for (i = 0; i < 14; i++) {
 		files[emptyFileIndex * 16 + 2 + i] = 0x0;
 	}
-	files[emptyFileIndex * 16] = 0xFF;
+	files[emptyFileIndex * 16] = 0x00;
 	files[emptyFileIndex * 16 + 1] = emptySectorIndex;
 	for (i = 0; i < 14; i++) {
 		if (argv[1][i] == 0) {

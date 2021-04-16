@@ -1,5 +1,3 @@
-/* include */
-
 #include "lib/fileio.h"
 #include "lib/math.c"
 #include "lib/text.c"
@@ -16,21 +14,20 @@ void cat(char *path, char parentIndex);
 void ln(char *fromPath, char *toPath, char parentIndex);
 void executeProgram(char *filename, int segment, int *success, char parentIndex);
 
-/* Utils */
-
-
 void printShell(char parentIndex);
 
 int currentDir;
 char files[1024];
 
 int main() {
+	char tempBuff[512];
 	char arg1[64];
 	char arg2[64];
 	char input[128];
 	int arg1Idx, arg2Idx;
 	int i;
 	int badCommand = 0;
+	int success = 1;
 	currentDir = 0xFF;
 
 	printLogo();
@@ -63,40 +60,40 @@ int main() {
 			}
 		}
 		else if (strCompare(input, "ls", 2)) {
-			if (input[2] == 0x0 || input[2] == " ") {
-				ls(currentDir);
+			tempBuff[0] = currentDir;
+			for (i = 1; input[i] != 0x0; i++)
+			{
+				tempBuff[i] = input[i-1];
 			}
+			writeSector(tempBuff, 0x0F);
+			clear(tempBuff, 512);
+			executeProgram("ls", 0x2000, success, 0x00);
 		}
 		else if (strCompare(input, "cat ", 4)) {
-			if (input[4] != 0x0) {
-				for (i = 4; input[i] != 0x0; i++) {
-					arg1[arg1Idx] = input[i];
-					arg1Idx++;
-				}
-				cat(arg1, currentDir);
+			tempBuff[0] = currentDir;
+			for (i = 1; input[i] != 0x0; i++)
+			{
+				tempBuff[i] = input[i-1];
 			}
+			writeSector(tempBuff, 0x0F);
+			clear(tempBuff, 512);
+			executeProgram("cat", 0x2000, success, 0x00);
 		}
 		else if (strCompare(input, "ln ", 3)) {
-			for (i = 3; input[i] != ' '; i++) {
-				if (input[i] == 0x0) {
-					badCommand = 1;
-					break;
-				}
+			tempBuff[0] = currentDir;
+			for (i = 1; input[i] != 0x0; i++)
+			{
+				tempBuff[i] = input[i-1];
+			}
+			writeSector(tempBuff, 0x0F);
+			clear(tempBuff, 512);
+			executeProgram("ln", 0x2000, success, 0x00);
+		}
+		else if (strCompare(input,"mkdir ", 6)) {
+			for (i = 6; input[i] != ' '; i++) {
 				arg1[arg1Idx] = input[i];
 				arg1Idx++;
-			}
-
-			i++;
-			for (; input[i] != 0x0; i++) {
-				arg2[arg2Idx] = input[i];
-				arg2Idx++;
-			}
-
-			if (!badCommand) {
-				ln(arg1, arg2, currentDir);
-			}
-			else {
-				printString("Tidak ada file operand\r\n");
+				makeDir(arg1,currentDir);
 			}
 		}
 		printString("\r\n");

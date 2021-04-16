@@ -1,9 +1,4 @@
-/* Library Matematika */
-/* Berisi mod dan div */
-
-/* Deklarasi fungsi */
-int mod(int a, int b);
-int div(int a, int b);
+#include "math.h"
 
 int mod(int a, int b) {
     while(a >= b){
@@ -11,8 +6,6 @@ int mod(int a, int b) {
     }
     return a;
 }
-
-/* Implementasi fungsi */
 
 int div(int a, int b) {
 	int result = 0;

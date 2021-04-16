@@ -1,10 +1,4 @@
-void readSector(char *buffer, int sector);
-void writeSector(char *buffer, int sector);
-void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
-void readFile(char *buffer, char *path, int *result, char parentIndex);
-void getDirIdxFromPath(char *path, char parentIndex, char *dirIndex, int *result);
-void getFileNameFromPath(char *path, char *fileName);
-void searchFile(char *path, char parentIndex, char *index, char *result);
+#include "fileio.h"
 
 void readSector(char *buffer, int sector) {
 	interrupt(0x13, 0x201, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
@@ -297,10 +291,10 @@ void delFile(char path) {
     interrupt(0x21, 0x02, &mapBuffer, 256, 0);
     interrupt(0x21, 0x02, &sectBuffer, 259, 0);
     i = 0;
-    while (sectBuffer[entry*16+1] != '\0' && i < 16) {
+    while (sectBuffer[path*16+1] != '\0' && i < 16) {
         // Kosongkan
-        mapBuffer[sectBuffer[entry*16+1]] = 0x0;
-        sectBuffer[entry*16+i] = 0x0;
+        mapBuffer[sectBuffer[path*16+1]] = 0x0;
+        sectBuffer[path*16+i] = 0x0;
         i++;
     }
 

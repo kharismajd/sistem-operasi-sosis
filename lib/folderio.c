@@ -1,5 +1,4 @@
-
-int isFolder(char *path, char parentIndex);
+#include "folderio.h"
 
 int isFolder(char *path, char parentIndex) {
 	char files[1024];
@@ -24,7 +23,8 @@ int isFolder(char *path, char parentIndex) {
 	return 0;
 }
 
-int delDir(char path) {
+int delDir(char path) { // Kurang di ngubah map.img & sectors.img
+// kalo ada yg hardlink jangan sampai sectors sama mapnya ilang, folder doang aja
     char folderAndFiles[1024];
     int i;
 

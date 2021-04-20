@@ -1,3 +1,6 @@
+#include "fileio.h"
+#include "folderio.h"
+
 int main()
 {
     char buffer[512];

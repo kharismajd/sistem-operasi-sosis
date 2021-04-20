@@ -1,8 +1,3 @@
-#include "lib/fileio.h"
-#include "lib/math.c"
-#include "lib/text.c"
-#include "lib/folderio.c"
-
 /* Ini deklarasi fungsi */
 void handleInterrupt21 (int AX, int BX, int CX, int DX);
 void printLogo2(int baris, int kolom, char* s);
@@ -40,7 +35,7 @@ int main() {
 		printShell(currentDir);
 		
 		clear(input, 64);
-		readString(input);		
+		clear(tempBuff, 512);		readString(input);		
 
 		i = 0;
 		badCommand = 0;
@@ -115,7 +110,7 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 			break; 
 		case 0x02: 
 			readSector(BX, CX); 
-			break; 
+			break;
 		case 0x03: 
 			writeSector(BX, CX); 
 			break; 
@@ -308,7 +303,6 @@ void printShell(char parentIndex) {
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 
-	
 	dirIdx = parentIndex;
 	clear(stack, 64);
 	stack[0] = dirIdx;

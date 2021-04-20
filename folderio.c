@@ -43,7 +43,7 @@ int delDir(char path) { // Kurang di ngubah map.img & sectors.img
     for (i = 0; i < 64; i++) {
         if (folderAndFiles[i*16] != 0xFF) { // Jika bukan 0xFF, maka bukan file
             if (folderAndFiles[i*16] == path && folderAndFiles[i*16+1] != '\0') { // Pada path & bukan end of line, artinya file
-                hapusFile(i); // Hapus file pada folder path
+                delFile(i); // Hapus file pada folder path
             }
         }
     }

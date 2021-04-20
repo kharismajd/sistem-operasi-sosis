@@ -62,3 +62,11 @@ int strCompare(char *a, char *b, int length) {
 	}
 	return 1;
 }
+
+void strcpy(char *a, char *b, int length) {
+	int i;
+	for (i = 0; i < length; i++)
+	{
+		b[i] = a[i];
+	}
+}

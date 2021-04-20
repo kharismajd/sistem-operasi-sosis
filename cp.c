@@ -14,6 +14,7 @@ int main()
 
     readSector(buffer, 0x0F);
     readSector(map, 0x100);
+	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 	readSector(sectors, 0x103);
 

@@ -2,14 +2,10 @@
 
 void printString(char *string) {
 	int i = 0;
-  	while (printInterupt(&string[i])) {
+  	while (string[i] != 0x0) {
     	interrupt(0x10, 0xe * 256 + string[i], 0, 0, 0);
     	i++;
   }
-}
-
-int printInterupt(char *string) {
-    return (*string != '\0' ? 1 : 0);
 }
 
 void readString(char* string)

@@ -27,7 +27,7 @@ gcc -o loadFile loadFile.c
 # compile shell
 bcc -ansi -c -o shell.o shell.c
 nasm -f as86 lib.asm -o lib_asm.o
-ld86 -o shell -d shell.o lib_asm.o
+ld86 -o shell -d shell.o lib_asm.o kernel.o text.o fileio.o
 ./loadFile shell
  
 # compile cat
@@ -41,9 +41,9 @@ ld86 -o rm -d rm.o lib_asm.o text.o fileio.o folderio.o math.o
 ./loadFile rm
  
 # compile mkdir
-bcc -ansi -c mkdir.c -o mkdir.o
-ld86 -o mkdir -d mkdir.o lib_asm.o
-./loadFile mkdir
+#bcc -ansi -c mkdir.c -o mkdir.o
+#ld86 -o mkdir -d mkdir.o lib_asm.o
+#./loadFile mkdir
 
 # loadFile testcases
 ./loadFile test/test1.txt

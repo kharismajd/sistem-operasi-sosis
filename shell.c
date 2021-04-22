@@ -1,5 +1,4 @@
 void cd(char *path, char *parentIndex);
-void ls(char parentIndex);
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 void printShell(char parentIndex);
 
@@ -113,27 +112,6 @@ void cd(char *path, char *parentIndex) {
 	}
 }
 
-void ls(char parentIndex) {
-	char files[1024];
-	char fileName[14];
-
-	int fileIndex, i;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	for(fileIndex = 0; fileIndex < 64; fileIndex++) {
-		if (files[fileIndex * 16] == parentIndex && files[fileIndex * 16 + 2] != 0x0) {
-			clear(fileName, 14);
-			for(i = 0; i < 14; i++) {
-				fileName[i] = files[fileIndex * 16 + 2 + i];
-			}
-			printString(fileName);
-			printString("\r\n");
-		}
-	}
-}
-
 void cat(char *path, char parentIndex) {
 	char buffer[8192];
 	char fileName[14];
@@ -152,80 +130,6 @@ void cat(char *path, char parentIndex) {
 		printString(buffer);
 		printString("\r\n");
 	}
-}
-
-void ln(char *fromPath, char *toPath, char parentIndex) {
-	char files[1024];
-	char fileName[14];
-
-	char fileIndex;
-	char dummyFileIndex;
-	char emptyFilesIndex;
-	char dirIndex;
-	char fileSector;
-	
-	int fromFileExist;
-	int toFileExist;
-	int dirValid;
-	int i;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	searchFile(toPath, parentIndex, &dummyFileIndex, &toFileExist);
-	if (toFileExist || isFolder(toPath, parentIndex)) {
-		printString("Sudah ada file/folder dengan nama tersebut pada destinasi\r\n");
-		return;
-	}
-
-	if (isFolder(fromPath, parentIndex)) {
-		getFileNameFromPath(fromPath, fileName);
-		printString(fileName);
-		printString(" adalah sebuah folder\r\n");
-		return;
-	}
-
-	searchFile(fromPath, parentIndex, &fileIndex, &fromFileExist);
-	if (fromFileExist) {
-		getDirIdxFromPath(toPath, parentIndex, &dirIndex, &dirValid);
-		if (dirValid) {
-			emptyFilesIndex = -1;
-			for(i = 0; i < 64; i++) {
-				if (files[i * 16] == 0x0 && files[i * 16 + 1] == 0x0 && files[i * 16 + 2] == 0x0) {
-					emptyFilesIndex = i;
-					break;
-				}
-			}
-
-			if (emptyFilesIndex == -1) {
-				printString("Tidak cukup entri di files\r\n");
-				return;
-			}
-
-			getFileNameFromPath(toPath, fileName);
-			if (fileName[0] == 0x0) {
-				printString("Tidak ada nama file destinasi\r\n");
-			}
-
-			clear(files + emptyFilesIndex * 16, 16);
-			files[emptyFilesIndex * 16] = dirIndex;
-			files[emptyFilesIndex * 16 + 1] = files[fileIndex * 16 + 1];
-			for(i = 0; i < 14; i++) {
-				files[emptyFilesIndex * 16 + 2 + i] = fileName[i];
-			}
-		} 
-		else {
-			printString("Folder tidak valid\r\n");
-			return;
-		}
-	}
-	else {
-		printString("File tidak ditemukan\r\n");
-		return;
-	}
-
-	writeSector(files, 0x101);
-	writeSector(files + 512, 0x102);
 }
 
 void printShell(char parentIndex) {

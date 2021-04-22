@@ -70,3 +70,20 @@ void strcpy(char *a, char *b, int length) {
 		b[i] = a[i];
 	}
 }
+
+void concat(char *a, char *b) {
+	int i;
+	int j;
+
+	i = 0;
+	while (a[i] != 0x0) {
+		i += 1;
+	}
+
+	j = 0;
+	while (b[j] != 0x0) {
+		a[i] = b[j];
+		i += 1;
+		j += 1;
+	}
+}

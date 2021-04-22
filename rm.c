@@ -1,7 +1,3 @@
-#include "text.h"
-#include "fileio.h"
-#include "folderio.h"
-
 void main() {
     char nama[14]; 
     char currDir;
@@ -26,7 +22,7 @@ void main() {
 
     // Baca sektor files & folder
     interrupt(0x21, 0x02, dirNfiles, 257, 0); // Karena 257 adalah sektor files yang pertama
-    interrupt(0x21, 0x02, dirNfiles + 512, 258, 0); // Karena 258 adalah sektor files yang kedua dan juga harus diperiksa
+    interrupt(0x21, 0x02, dirNfiles + 512, 258, 0); // Karena 258 adalah sektor files yang kedua sehingga harus diperiksa
 
     i = 0;
     while (!ketemu && i < 1024) { // Telusuri sampai sektor file terakhir

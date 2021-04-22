@@ -1,3 +1,4 @@
+# Setup bootloader
 nasm bootloader.asm -o bootloader
 dd if=bootloader of=system.img bs=512 count=1 conv=notrunc
 dd if=map.img of=system.img bs=512 count=1 seek=256 conv=notrunc
@@ -7,6 +8,11 @@ bcc -ansi -c -o kernel.o kernel.c
 nasm -f as86 kernel.asm -o kernel_asm.o
 ld86 -o kernel -d kernel.o kernel_asm.o
 dd if=kernel of=system.img bs=512 conv=notrunc seek=1
+
+# Creating loadFile
 gcc -o loadFile loadFile.c
 ./loadFile abcd.txt
+
+
+# Last
 echo c | bochs -f if2230.config

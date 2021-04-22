@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-
-=======
-void cd(char *path, char *parentIndex);
-void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
-void printShell(char parentIndex);
->>>>>>> 3599e434655dccb0e32c92cc675d793e353c62e4
 
 int currentDir;
 char files[1024];

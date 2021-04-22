@@ -14,7 +14,7 @@ void main() {
     ketemu = 0;
 
     // Dapatkan idx parent dan nama
-    interrupt(0x21, 0x02, direktori, 512, 0);
+    interrupt(0x21, 0x02, direktori, 0x0D, 0);
     currDir = direktori[0];
     for (i = 0; i < 14; i++) {
         nama[i] = direktori[i+1];

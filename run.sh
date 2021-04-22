@@ -25,17 +25,10 @@ gcc -o loadFile loadFile.c
 ./loadFile test/test1.txt
 
 # compile shell
-<<<<<<< HEAD
 #bcc -ansi -c -o shell.o shell.c
 #nasm -f as86 lib.asm -o lib_asm.o
 #ld86 -o shell -d shell.o lib_asm.o kernel.o text.o fileio.o
 #./loadFile shell
-=======
-bcc -ansi -c -o shell.o shell.c
-nasm -f as86 lib.asm -o lib_asm.o
-ld86 -o shell -d shell.o lib_asm.o kernel.o text.o fileio.o
-./loadFile shell
->>>>>>> 3599e434655dccb0e32c92cc675d793e353c62e4
  
 # compile cat
 bcc -ansi -c cat.c -o cat.o

@@ -1,0 +1,7 @@
+.vscode
+system.img
+files.img
+map.img
+*.io
+kernel
+loadFile

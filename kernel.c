@@ -3,6 +3,7 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX);
 void printLogo2(int baris, int kolom, char* s);
 void printLogo();
 void executeProgram(char *filename, int segment, int *success, char parentIndex);
+<<<<<<< HEAD
 void cd(char *path, char *parentIndex);
 void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 void printShell(char parentIndex);
@@ -92,6 +93,18 @@ int main() {
 		}
 		printString("\r\n");
 	}
+=======
+
+int main() {
+	int issukses;
+
+	printLogo();
+	printString("\n\n\n\n");
+
+	executeProgram("shell",0x2000,&issukses,0xFF);
+	while(1);
+
+>>>>>>> 3599e434655dccb0e32c92cc675d793e353c62e4
 	return 0;
 }
 

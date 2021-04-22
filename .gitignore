@@ -5,3 +5,5 @@ map.img
 *.io
 kernel
 loadFile
+bochsout.txt
+bootloader

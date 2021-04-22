@@ -2,19 +2,16 @@
 void handleInterrupt21 (int AX, int BX, int CX, int DX);
 void printLogo2(int baris, int kolom, char* s);
 void printLogo();
-void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
-void cd(char *path, char *parentIndex);
-void ls(char parentIndex);
-void cat(char *path, char parentIndex);
-void ln(char *fromPath, char *toPath, char parentIndex);
 void executeProgram(char *filename, int segment, int *success, char parentIndex);
-
+void cd(char *path, char *parentIndex);
+void clear(char *buffer, int length); //Fungsi untuk mengisi buffer dengan 0
 void printShell(char parentIndex);
 
 int currentDir;
 char files[1024];
 
 int main() {
+	int issukses;
 	char tempBuff[512];
 	char arg1[64];
 	char arg2[64];
@@ -26,16 +23,18 @@ int main() {
 	currentDir = 0xFF;
 
 	printLogo();
-
 	printString("\n\n\n\n");
-	while(1){
+
+	executeProgram("shell",0x2000,&issukses,0xFF);
+	while(1) {
 		readSector(files, 0x101);
 		readSector(files + 512, 0x102);
 
 		printShell(currentDir);
 		
 		clear(input, 64);
-		clear(tempBuff, 512);		readString(input);		
+		clear(tempBuff, 512);
+		readString(input);		
 
 		i = 0;
 		badCommand = 0;
@@ -93,7 +92,6 @@ int main() {
 		}
 		printString("\r\n");
 	}
-
 	return 0;
 }
 
@@ -144,194 +142,6 @@ void printLogo() {
    printLogo2(16, 22, "|issOSissOS|");
    printLogo2(17, 22, "|ssOSissOSi|");
    printLogo2(18, 22, "------------");
-}
-
-void cd(char *path, char *parentIndex) {
-	char files[1024];
-	char folderName[14];
-
-	char dirIndex;
-	char fileIndex;
-	int dirValid;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	getDirIdxFromPath(path, *parentIndex, &dirIndex, &dirValid);
-	getFileNameFromPath(path, folderName);
-	if (folderName[0] == 0x0) {
-		*parentIndex = dirIndex;
-		return;
-	}
-	else {
-		for (fileIndex = 0; fileIndex < 64; fileIndex++) {
-			if (files[fileIndex * 16] == dirIndex && files[fileIndex * 16 + 1] == 0xFF && strCompare(folderName, files + fileIndex * 16 + 2, 14)) {
-				*parentIndex = fileIndex;
-				return;
-			}
-		}
-		printString(folderName);
-		printString(" bukan sebuah folder/tidak ada pada direktori\r\n");
-	}
-}
-
-void ls(char parentIndex) {
-	char files[1024];
-	char fileName[14];
-
-	int fileIndex, i;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	for(fileIndex = 0; fileIndex < 64; fileIndex++) {
-		if (files[fileIndex * 16] == parentIndex && files[fileIndex * 16 + 2] != 0x0) {
-			clear(fileName, 14);
-			for(i = 0; i < 14; i++) {
-				fileName[i] = files[fileIndex * 16 + 2 + i];
-			}
-			printString(fileName);
-			printString("\r\n");
-		}
-	}
-}
-
-void cat(char *path, char parentIndex) {
-	char buffer[8192];
-	char fileName[14];
-	int result;
-
-	if (isFolder(path, parentIndex)) {
-		getFileNameFromPath(path, fileName);
-		printString(fileName);
-		printString(" adalah sebuah folder\r\n");
-		return;
-	}
-
-	readFile(buffer, path, &result, parentIndex);
-
-	if (result == 0) {
-		printString(buffer);
-		printString("\r\n");
-	}
-}
-
-void ln(char *fromPath, char *toPath, char parentIndex) {
-	char files[1024];
-	char fileName[14];
-
-	char fileIndex;
-	char dummyFileIndex;
-	char emptyFilesIndex;
-	char dirIndex;
-	char fileSector;
-	
-	int fromFileExist;
-	int toFileExist;
-	int dirValid;
-	int i;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	searchFile(toPath, parentIndex, &dummyFileIndex, &toFileExist);
-	if (toFileExist || isFolder(toPath, parentIndex)) {
-		printString("Sudah ada file/folder dengan nama tersebut pada destinasi\r\n");
-		return;
-	}
-
-	if (isFolder(fromPath, parentIndex)) {
-		getFileNameFromPath(fromPath, fileName);
-		printString(fileName);
-		printString(" adalah sebuah folder\r\n");
-		return;
-	}
-
-	searchFile(fromPath, parentIndex, &fileIndex, &fromFileExist);
-	if (fromFileExist) {
-		getDirIdxFromPath(toPath, parentIndex, &dirIndex, &dirValid);
-		if (dirValid) {
-			emptyFilesIndex = -1;
-			for(i = 0; i < 64; i++) {
-				if (files[i * 16] == 0x0 && files[i * 16 + 1] == 0x0 && files[i * 16 + 2] == 0x0) {
-					emptyFilesIndex = i;
-					break;
-				}
-			}
-
-			if (emptyFilesIndex == -1) {
-				printString("Tidak cukup entri di files\r\n");
-				return;
-			}
-
-			getFileNameFromPath(toPath, fileName);
-			if (fileName[0] == 0x0) {
-				printString("Tidak ada nama file destinasi\r\n");
-			}
-
-			clear(files + emptyFilesIndex * 16, 16);
-			files[emptyFilesIndex * 16] = dirIndex;
-			files[emptyFilesIndex * 16 + 1] = files[fileIndex * 16 + 1];
-			for(i = 0; i < 14; i++) {
-				files[emptyFilesIndex * 16 + 2 + i] = fileName[i];
-			}
-		} 
-		else {
-			printString("Folder tidak valid\r\n");
-			return;
-		}
-	}
-	else {
-		printString("File tidak ditemukan\r\n");
-		return;
-	}
-
-	writeSector(files, 0x101);
-	writeSector(files + 512, 0x102);
-}
-
-void printShell(char parentIndex) {
-	char files[1024];
-	char fileName[14];
-	char stack[64];
-
-	char dirIdx;
-	char currIdx;
-
-	int i, j;
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	dirIdx = parentIndex;
-	clear(stack, 64);
-	stack[0] = dirIdx;
-
-	i = 0;
-	while (dirIdx != 0xFF) {
-		i++;
-		dirIdx = files[dirIdx * 16];
-		stack[i] = dirIdx;
-	}
-
-	while (i >= 0) {
-		currIdx = stack[i];
-
-		if (currIdx == 0xFF) {
-			printString("Root");
-		}
-		else {
-			clear(fileName, 14);
-			for(j = 0; j < 14; j++) {
-				fileName[j] = files[currIdx * 16 + 2 + j];
-			}
-
-			printString("\\");
-			printString(fileName);
-		}
-		i--;
-	}
-	printString(">");
 }
 
 void executeProgram(char *filename, int segment, int *success, char parentIndex) {

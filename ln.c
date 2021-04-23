@@ -104,7 +104,6 @@ int main()
                 {
                     files[emptyFilesIndex * 16 + 2 + i] = fileName[i];
                 }
-                printString("Hello, World!\r\n");
             }
             else
             {
@@ -126,6 +125,5 @@ int main()
         printString("Tidak ada file operand\r\n");
         executeProgram("shell", 0x2000, &success, 0x00);
     }
-    printString("Hello, World!\r\n");
     executeProgram("shell", 0x4000, &success, 0x00);
 }

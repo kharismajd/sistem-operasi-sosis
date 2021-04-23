@@ -38,7 +38,7 @@ int main()
     clear(path, 64);
     clear(path2, 64);
     clear(fileName, 14);
-    
+
     for (i = 0; i < 4; i++) {
         clear(argv[i], 64);
     }
@@ -150,7 +150,6 @@ int main()
  
             concat(path2, "/");
             concat(path2, fileName);
-            printString(path2);
  
             readFile(fileBuffer, path, &dummyResult, currDir);
             writeFile(fileBuffer, path2, &dummyResult, currDir);

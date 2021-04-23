@@ -35,6 +35,11 @@ bcc -ansi -c hello.c -o hello.o
 ld86 -o hello -d hello.o text.o kernel.o kernel_asm.o fileio.o folderio.o math.o
 ./loadFile hello
 
+# Compile printlogo
+bcc -ansi -c printlogo.c -o printlogo.o
+ld86 -o printlogo -d printlogo.o text.o kernel.o kernel_asm.o fileio.o folderio.o math.o
+./loadFile printlogo
+
 # Compile shell
 bcc -ansi -c shell.c -o shell.o
 ld86 -o shell -d shell.o fileio.o folderio.o text.o math.o kernel_asm.o kernel.o
@@ -72,7 +77,7 @@ ld86 -o mkdir -d mkdir.o text.o folderio.o fileio.o lib_asm.o math.o kernel.o ke
 
 # Delete unnecessary files
 rm *.o bochsout.txt bootloader cat kernel hello
-rm loadFile mkdir rm shell ln cp mv
+rm loadFile mkdir rm shell ln cp mv printlogo
  
 # Last
 echo c | bochs -f if2230.config

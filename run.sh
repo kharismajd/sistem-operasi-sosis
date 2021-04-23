@@ -28,6 +28,7 @@ dd if=kernel of=system.img bs=512 conv=notrunc seek=1
  
 # Creating loadFile
 gcc -o loadFile loadFile.c
+./loadFile test1.txt
 
 # Compile shell
 bcc -ansi -c shell.c -o shell.o
@@ -51,7 +52,7 @@ ld86 -o ln -d ln.o fileio.o text.o folderio.o  math.o kernel.o kernel_asm.o
 
 # Compile mv
 bcc -ansi -c mv.c -o mv.o
-ld86 -o mv -d mv.o lib_asm.o folderio.o fileio.o math.o text.o
+ld86 -o mv -d mv.o lib_asm.o folderio.o fileio.o math.o text.o kernel.o kernel_asm.o
 ./loadFile mv
 
 # Compile rm

@@ -1,11 +1,11 @@
 //#include "fileio.h"
 //#include "folderio.h"
 //#include "text.h"
-
+ 
 int countFreeSector();
 int countFreeFilesEntry();
 int countFreeSectorExtry();
-
+ 
 int main()
 {
     char fileBuffer[8192];
@@ -22,14 +22,14 @@ int main()
     char sectorIdx;
     char mapIdx;
     char isFileExist;
-    
+ 
     int dummyResult;
     int argc;
     int neededSector;
     int countFiles;
     int i;
     int nameLength;
-
+ 
     clear(fileBuffer, 8192);
     clear(files, 1024);
     clear(map, 512);
@@ -38,6 +38,7 @@ int main()
     clear(path, 64);
     clear(path2, 64);
     clear(fileName, 14);
+    
     for (i = 0; i < 4; i++) {
         clear(argv[i], 64);
     }
@@ -46,9 +47,9 @@ int main()
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 	readSector(sectors, 0x103);
-
+ 
     currDir = buffer[0];
-
+ 
     //Baca argumen
     i = 4;
     argc = 0;
@@ -61,13 +62,13 @@ int main()
             argc += 1;
             i += 1;
         }
-        
+ 
         argv[argc][nameLength] = buffer[i];
         nameLength += 1;
         i += 1;
     }
     argc += 1;
-
+ 
     if (argc < 2)
     {
         printString("Cara menggunakan: cp <file> <file baru>\r\n");
@@ -75,7 +76,7 @@ int main()
         printString("Cara menggunakan: cp <file 1> <file 2> <file n> <folder destinasi>\r\n");
         executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
-
+ 
     //Hitung sector yang dibutuhkan
     countFiles = argc - 1;
     neededSector = 0;
@@ -92,7 +93,7 @@ int main()
                 printString("\r\n");
                 executeProgram("shell", 0x2000, &dummyResult, 0x00);
             }
-
+ 
             sectorIdx = files[fileIdx * 16 + 1];
             for (i = 0; i < 16; i++)
             {
@@ -113,27 +114,26 @@ int main()
             executeProgram("shell", 0x2000, &dummyResult, 0x00);
         }
     }
-    printString("Sampe sini?");
+ 
     //Cek jika cp memungkinkan
     if (neededSector > countFreeSector())
     {
         printString("Tidak cukup sektor\r\n");
         executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
-
+ 
     if (countFiles > countFreeFilesEntry())
     {
         printString("Tidak cukup entri files\r\n");
         executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
-
+ 
     if (countFiles > countFreeSectorExtry())
     {
         printString("Tidak cukup entri sektor\r\n");
         executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
-
-    printString("Sampe sini kah?");
+ 
     clear(path, 64);
     strcpy(argv[argc - 1], path, 64);
     if (isFolder(path, currDir))
@@ -143,14 +143,15 @@ int main()
             clear(fileBuffer, 8192);
             clear(path, 64);
             clear(path2, 64);
-
+ 
             strcpy(argv[argc - 1], path2, 64);
             strcpy(argv[i], path, 64);
             getFileNameFromPath(path, fileName);
-
+ 
             concat(path2, "/");
             concat(path2, fileName);
-
+            printString(path2);
+ 
             readFile(fileBuffer, path, &dummyResult, currDir);
             writeFile(fileBuffer, path2, &dummyResult, currDir);
         }
@@ -160,11 +161,11 @@ int main()
         if (argc == 2)
         {
             clear(fileBuffer, 8192);
-
+ 
             clear(path, 64);
             strcpy(argv[0], path, 64);
             readFile(fileBuffer, path, &dummyResult, currDir);
-
+ 
             clear(path, 64);
             strcpy(argv[1], path, 64);
             writeFile(fileBuffer, path, &dummyResult, currDir);
@@ -177,14 +178,14 @@ int main()
     }
     executeProgram("shell", 0x2000, &dummyResult, 0x00);
 }
-
+ 
 int countFreeSector()
 {
     char map[512];
     int i, count;
-
+ 
     readSector(map, 0x100);
-
+ 
     count = 0;
     for (i = 0; i < 512; i++)
     {
@@ -195,15 +196,15 @@ int countFreeSector()
     }
     return count;
 }
-
+ 
 int countFreeFilesEntry()
 {
     char files[1024];
     int i, count;
-
+ 
     readSector(files, 0x101);
     readSector(files + 512, 0x102);
-
+ 
     count = 0;
     for (i = 0; i < 64; i++)
     {
@@ -212,17 +213,17 @@ int countFreeFilesEntry()
             count += 1;
         }
     }
-
+ 
     return count;
 }
-
+ 
 int countFreeSectorExtry()
 {
     char sectors[512];
     int i, count;
-
+ 
     readSector(sectors, 0x103);
-
+ 
     count = 0;
     for (i = 0; i < 32; i++)
     {
@@ -231,6 +232,6 @@ int countFreeSectorExtry()
             count += 1;
         }
     }
-
+ 
     return count;
 }

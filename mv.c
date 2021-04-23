@@ -78,8 +78,6 @@ void main() {
 		++counter;
 	}
 
-
-
 	if(cont) {
 		interrupt(0x21, 2, directory, 0x101,0);
 		interrupt(0x21, 3, directory + panjang, 0,0);

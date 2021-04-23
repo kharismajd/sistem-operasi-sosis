@@ -69,18 +69,21 @@ void printLogo() {
 void executeProgram(char *filename, int segment, int *success, char parentIndex) {
     // Buat buffer
     int isSuccess;
+	int i;
     char fileBuffer[512 * 16];
     // Buka file dengan readFile
     readFile(&fileBuffer, filename, &isSuccess, parentIndex);
     // If success, salin dengan putInMemory
     if (isSuccess) {
-        // launchProgram
-        int i = 0;
+        printString("Masukk");
+        i = 0;
         for (i = 0; i < 512*16; i++) {
             putInMemory(segment, i, fileBuffer[i]);
         }
+		printString("Launch!");
         launchProgram(segment);
     } else {
         interrupt(0x21, 0, "File not found!", 0,0);
+		printString("testttt");
     }
 }

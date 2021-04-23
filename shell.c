@@ -1,7 +1,7 @@
 void printShell(char parentIndex);
 void cd(char *path, char *parentIndex);
 void ls(char parentIndex);
-
+int searchPath(char* dirCall, int parentIndex);
 char currentDir;
 char files[1024];
 
@@ -13,6 +13,8 @@ void main() {
 	char input[128];
 	char fileName[14];
 	char dirIdx;
+    char fileIdx;
+    char fileExist;
 
 	int arg1Idx, arg2Idx;
 	int i;
@@ -52,66 +54,6 @@ void main() {
         else if (strCompare(input, "ls", 2)) {
             ls(currentDir);
         }
-        else if (strCompare(input, "cat ", 4)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("cat", 0x3000, &success, 0x00);
-        }
-        else if (strCompare(input, "ln ", 3)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("ln", 0x3000, &success, 0x00);
-        }
-        else if (strCompare(input,"mkdir ", 6)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("mkdir", 0x3000, success, 0x00);
-        }
-        else if (strCompare(input,"mv ", 3)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("mv", 0x3000, success, 0x00);
-        }
-        else if (strCompare(input,"cp ", 3)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("cp", 0x3000, success, 0x00);
-        }
-        else if (strCompare(input,"rm ", 3)) {
-            tempBuff[0] = currentDir;
-            for (i = 1; input[i-1] != 0x0; i++)
-            {
-                tempBuff[i] = input[i-1];
-            }
-            writeSector(tempBuff, 511);
-            clear(tempBuff, 512);
-            executeProgram("rm", 0x3000, success, 0x00);
-        }
         else if (strCompare(input,"./", 2)) {
             for (i = 2; input[i] != 0x0; i++)
             {
@@ -120,6 +62,32 @@ void main() {
             getDirIdxFromPath(arg1, currentDir, &dirIdx, success);
             getFileNameFromPath(arg1, fileName);
             executeProgram(fileName, 0x3000, success, dirIdx);
+        }
+        else {
+            tempBuff[0] = currentDir;
+            for (i = 0; input[i] != ' '; i++)
+            {
+                if (input[i] == 0x0) {
+                    break;
+                }
+                fileName[i] = input[i];
+            }
+
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+
+            searchFile(fileName, 0x00, &fileIdx, &fileExist);
+            if (fileExist) {
+                writeSector(tempBuff, 511);
+                clear(tempBuff, 512);
+                executeProgram(fileName, 0x3000, success, 0x00);
+            }
+            else {
+                printString(fileName);
+                printString(" tidak ada pada folder bin");
+            }
         }
         printString("\r\n");
     }

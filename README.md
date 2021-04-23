@@ -34,6 +34,7 @@ This will print all of the file content
 
 6. ln (membuat symbolic link)
 Usage: ```ln <source> <destination>```
+This will
 
 ## Author
 * 13519176 Made Kharisma Jagaddhita

@@ -2,94 +2,146 @@
 //#include 
 
 void main() {
-	char* cmd[14];
-	int* idxDir;
-	char directory[14], tempBuff[512], files[1024], dirDipindah[14];
-	int count, nomorPindah, cont, var, initDir, targetDir, counter;
-	int panjang = 512, isSuccess;
-	int i;
-	var = 0;
-	count = 0;
-	cont = 1;
-	counter = 0;
+    char files[1024];
+    char buffer[512];
+    char path[64];
+    char fileName[14];
+	char fileName2[14];
+    char argv[4][64];
+    char currDir;
+    char dirIdx;
+	char newDirIdx;
+ 
+    int dummyResult;
+    int argc;
+    int countFiles;
+    int i;
+	int j;
+	int k;
+    int nameLength;
+	int sudahAda;
+ 
+    clear(files, 1024);
+    clear(buffer, 512);
+    clear(path, 64);
+    clear(fileName, 14);
+	clear(fileName2, 14);
+    
+    for (i = 0; i < 4; i++) {
+        clear(argv[i], 64);
+    }
+    readSector(buffer, 511);
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
+ 
+    currDir = buffer[0];
+ 
+    //Baca argumen
+    i = 4;
+    argc = 0;
+    nameLength = 0;
+    while (buffer[i] != 0x0)
+    {
+        if (buffer[i] == 32)
+        {
+            nameLength = 0;
+            argc += 1;
+            i += 1;
+        }
+ 
+        argv[argc][nameLength] = buffer[i];
+        nameLength += 1;
+        i += 1;
+    }
+    argc += 1;
+ 
+    if (argc < 2)
+    {
+        printString("Cara menggunakan: mv <file/folder> <folder>\r\n");
+        printString("Cara menggunakan: mv <file/folder 1> <file/folder 2> <file/folder n> <folder destinasi>\r\n");
+        executeProgram("shell", 0x2000, &dummyResult, 0x00);
+    }
 
-	// get parentIdx and filename
-	interrupt(0x21, 0x02, tempBuff, 511, 0);
-    idxDir = tempBuff[0];
-    for (i = 0; i < 14; i++) {
-		cmd[i] = tempBuff[i + 1];
-	}
+	clear(path, 64);
+	countFiles = argc - 1;
+    strcpy(argv[argc - 1], path, 64);
+    if (isFolder(path, currDir))
+    {
+		getDirIdxFromPath(path, currDir, &newDirIdx, &dummyResult);
+		getFileNameFromPath(path, fileName);
 
-	targetDir = *(idxDir);
-	initDir = *(idxDir);
-	
-	for (i = 0; i < 14; ++i) {
-		directory[i] = '\0';
-		dirDipindah[i] = '0';
-	}
-	for (i = 0; i < 1024; i++) {
-		files[i] = '\0';
-	}
-
-	while (counter < 128 && (cmd[counter] != 0 && cont == 1)) {
-		if(var == 0) {
-            if (cmd[counter] == 64) {
-				nomorPindah = searchPath(dirDipindah, *idxDir);
-				if(nomorPindah != 64) {
-					count = 0;
-					var = 1;
-				} else {
-                    interrupt(0x21, 0, "Can't move file or directory : \0",0,0);
-					interrupt(0x21, 0, dirDipindah, 0, 0);
-					interrupt(0x21, 0, "\r\n\0", 0, 0);
-					cont = 0;
+		for (i = 0; i < 64; i++)
+		{
+			if (files[16 * i] == newDirIdx)
+			{
+				for (k = 0; k < 14; k++)
+				{
+					fileName2[k] = files[16 * i + 2 + k];
 				}
-			} else if(cmd[counter] == 32 && cmd[counter] == 0) {
-				dirDipindah[count] = cmd[counter];
-				++count;
-			} 
-			if(cmd[counter+1] == 32 || cmd[counter+2] == 32){
-				interrupt(0x21, 0, "Out of bounds!\r\n\0",0,0);
-				cont = 0;
+				if (strCompare(fileName, fileName2, 14))
+				{
+					newDirIdx = i;
+					break;
+				}
 			}
 		}
-		else if(var == 1) {
-			//cd di tempat tujuan
-            if(cmd[counter] == 32 || cmd[counter] == '/') {
-				nomorPindah = searchPath(directory, targetDir);
-				if(nomorPindah == 32) {
-					interrupt(0x21, 0, "Not found : \0",0,0);
-					interrupt(0x21, 0, directory, 0,0);
-					interrupt(0x21, 0, "\r\n\0", 0, 0);
-					cont = 0;
-				} else {
-					interrupt(0x21, 0, "Found : \0",0,0);
-					interrupt(0x21, 0, directory, 0,0);
-					interrupt(0x21, 0, "\r\n\0", 0, 0);
-					targetDir = nomorPindah;
+        for (i = 0; i < countFiles; i++)
+        {
+            clear(path, 64);
+            strcpy(argv[i], path, 64);
+
+			getDirIdxFromPath(path, currDir, &dirIdx, &dummyResult);
+			getFileNameFromPath(path, fileName);
+			if (dummyResult == 1) {
+				sudahAda = 0;
+				for (j = 0; j < 64; j++)
+				{
+					if (files[16 * j] == newDirIdx)
+					{
+						for (k = 0; k < 14; k++)
+						{
+							fileName2[k] = files[16 * j + 2 + k];
+						}
+						if (strCompare(fileName, fileName2, 14))
+						{
+							printString(fileName);
+							sudahAda = 1;
+							break;
+						}
+					}
 				}
-				count = 0;
-			}else if(cmd[counter] == '/') {
-				//isi array
-				directory[count] = cmd[counter];
-				++count;
-			} 
-		}
-		++counter;
-	}
+				if (!sudahAda)
+				{
+					for (j = 0; j < 64; j++)
+					{
+						if (files[16 * j] == dirIdx)
+						{
+							for (k = 0; k < 14; k++)
+							{
+								fileName2[k] = files[16 * j + 2 + k];
+							}
+							if (strCompare(fileName, fileName2, 14))
+							{
+								files[16 * j] = newDirIdx;
+								break;
+							}
+						}
+					}
+				}
+				else
+				{
+					printString(fileName);
+					printString(" sudah ada pada destinasi\r\n");
+				}
+			}     
+        }
+    }
+    else
+    {
+        printString("Folder destinasi tidak ada\r\n");
+    }
 
-	if(cont) {
-		interrupt(0x21, 2, directory, 0x101,0);
-		interrupt(0x21, 3, directory + panjang, 0,0);
-		directory[nomorPindah*16] = targetDir;
-		interrupt(0x21, 2, directory + panjang, 0,0);
-		interrupt(0x21, 3, directory, 0x101,0);
-		interrupt(0x21, 0, "Done!", 0,0);
-	}
-	for (i = 0; i < 14; ++i) {
-		directory[i] = '\0';
-		dirDipindah[i] = '\0';
-	}
-	executeProgram("shell", 0x2000, &isSuccess, 0x00);
+	writeSector(files, 0x101);
+	writeSector(files + 512, 0x102);
+    executeProgram("shell", 0x2000, &dummyResult, 0x00);
 }
-

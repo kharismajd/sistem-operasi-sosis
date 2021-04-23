@@ -15,10 +15,14 @@ This will move file_1 to folder_2
 Usage: 
 * ```cp <file> <fnew>```
 File will be copied to fnew
+
 * ```cp <file> <destination folder>```
 File will be copied to destination folder
+
 * ```cp <file 1> <file 2> <file n> <destination folder>```
 All of the file stated in paramater (except last one, which is a folder) will be moved to destination folder
+
+Note: Up to 3 file only
 
 3. mkdir (membuat directory)
 Usage: ```mkdir <new_folder>```
@@ -34,7 +38,7 @@ This will print all of the file content
 
 6. ln (membuat symbolic link)
 Usage: ```ln <source> <destination>```
-This will
+This will create a soft link to original file (source) in destination
 
 ## Author
 * 13519176 Made Kharisma Jagaddhita

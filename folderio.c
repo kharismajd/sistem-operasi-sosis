@@ -28,16 +28,19 @@ int delDir(char path) { // Kurang di ngubah map.img & sectors.img
     char folderAndFiles[1024];
     int i;
 
-    interrupt(0x21, 0x02, folderAndFiles, 257, 0);
-    interrupt(0x21, 0x02, folderAndFiles + 512, 258, 0);
+    readSector(folderAndFiles, 257);
+    readSector(folderAndFiles + 512, 258);
 
     // Menghapus entry folder
     folderAndFiles[path*16] = 0x0;
     folderAndFiles[path*16+1] = '\0';
+	for (i = 0; i < 14; i++) {
+		folderAndFiles[path*16+2+i] = '\0';
+	}
 
     // Menulis kembali buffer ke sector
-    interrupt(0x21, 0x03, &folderAndFiles, 257, 0);
-    interrupt(0x21, 0x03, folderAndFiles + 512, 258, 0);
+    writeSector(folderAndFiles, 257);
+    writeSector(folderAndFiles + 512, 258);
 
     // Hapus setiap file pada folder
     for (i = 0; i < 64; i++) {

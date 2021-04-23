@@ -30,6 +30,11 @@ dd if=kernel of=system.img bs=512 conv=notrunc seek=1
 gcc -o loadFile loadFile.c
 ./loadFile test1.txt
 
+# Compile hello
+bcc -ansi -c hello.c -o hello.o
+ld86 -o hello -d hello.o text.o kernel.o kernel_asm.o fileio.o folderio.o math.o
+./loadFile hello
+
 # Compile shell
 bcc -ansi -c shell.c -o shell.o
 ld86 -o shell -d shell.o fileio.o folderio.o text.o math.o kernel_asm.o kernel.o
@@ -66,8 +71,8 @@ ld86 -o mkdir -d mkdir.o text.o folderio.o fileio.o lib_asm.o math.o kernel.o ke
 ./loadFile mkdir
 
 # Delete unnecessary files
-rm *.o bochsout.txt bootloader cat kernel
-rm loadFile mkdir rm shell ln cp ls mv
+rm *.o bochsout.txt bootloader cat kernel hello
+rm loadFile mkdir rm shell ln cp mv
  
 # Last
 echo c | bochs -f if2230.config

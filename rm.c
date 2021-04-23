@@ -1,9 +1,9 @@
 void main() {
     char path[64]; 
     char fileName[14];
+    char fileName2[14];
     char currDir;
     char dirNfiles[512*2];
-    char argv[4][64];
     char buffer[512];
     char dirIdx;
     char dirResult;
@@ -15,28 +15,29 @@ void main() {
     int dirNfilesentry;
     int sukses;
     ketemu = 0;
-    readSector(buffer,512);
-    currDir = buffer[0];
+    
+    clear(path, 64);
+    clear(fileName, 14);
+    clear(fileName2, 14);
 
-    // Dapatkan idx parent dan nama
-    for (i = 0; i < 14; i++) {
-        fileName[i] = buffer[i+1];
-    }
-    printString("\r\n\n");
-
-    // Baca sektor files / folder
     readSector(dirNfiles, 0x101);
     readSector(dirNfiles + 512, 0x102);
+    readSector(buffer, 511);
+    currDir = buffer[0];
+
+    for (i = 4; buffer[i] != 0x0; i++) {
+		path[i - 4] = buffer[i];
+	}
 
     ketemu = 0;
+    getDirIdxFromPath(path, currDir, &dirIdx, &dirResult);
+    getFileNameFromPath(path, fileName);
     for (i = 0; i < 64; i++) {
-        getDirIdxFromPath(path, currDir, &dirIdx, &dirResult);
-        if (dirResult == 1) {
-            getFileNameFromPath(path, fileName);
-            if (dirNfiles[i * 16] == dirIdx && strCompare(fileName, dirNfiles + i * 16 + 2, 14)) {
-                if (i == 8) {
-                    printString("Testing");
-                }
+        if (dirNfiles[i * 16] == dirIdx) {
+            for (j = 0; j < 14; j++) {
+                fileName2[j] = dirNfiles[16 * i + 2 + j];
+            }
+            if (strCompare(fileName, fileName2, 14)) {
                 ketemu = 1;
                 break;
             }

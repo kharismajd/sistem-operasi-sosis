@@ -69,6 +69,11 @@ void makeDir(char *path, char *parentIndex)
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 
+	if (isFolder(path, parentIndex)) {
+		printString("Sudah ada folder dengan nama itu\r\n");
+		return;
+	}
+
 	getDirIdxFromPath(path, parentIndex, &dirIdx, &dirResult);
 	if (dirResult == 1)
 	{

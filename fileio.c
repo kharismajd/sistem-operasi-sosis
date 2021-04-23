@@ -123,7 +123,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex) {
 		writeSector(buffer + (i * 512), emptyMapIdx);
 	}
 	
-	*sectors = 0;
+	*sectors = 1;
 	writeSector(map, 0x100);
 	writeSector(files, 0x101);
 	writeSector(files + 512, 0x102);
@@ -146,7 +146,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex) {
 	searchFile(path, parentIndex, &fileIndex, &fileExist);
 
 	if (fileExist) {
-		*result = 0;
+		*result = 1;
 		sectorIdx = files[fileIndex * 16 + 1];
 		for (i = 0; i < 16; i++)
 		{

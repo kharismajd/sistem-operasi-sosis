@@ -1,6 +1,6 @@
-#include "fileio.h"
-#include "folderio.h"
-#include "text.h"
+//#include "fileio.h"
+//#include "folderio.h"
+//#include "text.h"
 
 int countFreeSector();
 int countFreeFilesEntry();
@@ -30,7 +30,7 @@ int main()
     int i;
     int nameLength;
 
-    readSector(buffer, 0x0F);
+    readSector(buffer, 511);
     readSector(map, 0x100);
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
@@ -62,7 +62,7 @@ int main()
         printString("Cara menggunakan: cp <file> <file baru>\r\n");
         printString("Cara menggunakan: cp <file> <folder destinasi>\r\n");
         printString("Cara menggunakan: cp <file 1> <file 2> <file n> <folder destinasi>\r\n");
-        return;
+        executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
 
     //Hitung sector yang dibutuhkan
@@ -80,7 +80,7 @@ int main()
                 printString("Tidak bisa menemukan file ");
                 printString(path);
                 printString("\r\n");
-                return;
+                executeProgram("shell", 0x2000, &dummyResult, 0x00);
             }
 
             sectorIdx = files[fileIdx * 16 + 1];
@@ -100,7 +100,7 @@ int main()
         {
             printString(path);
             printString(" adalah sebuah folder\r\n");
-            return;
+            executeProgram("shell", 0x2000, &dummyResult, 0x00);
         }
     }
 
@@ -108,19 +108,19 @@ int main()
     if (neededSector > countFreeSector())
     {
         printString("Tidak cukup sektor\r\n");
-        return;
+        executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
 
     if (countFiles > countFreeFilesEntry())
     {
         printString("Tidak cukup entri files\r\n");
-        return;
+        executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
 
     if (countFiles > countFreeSectorExtry())
     {
         printString("Tidak cukup entri sektor\r\n");
-        return;
+        executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
 
     clear(path, 64);
@@ -133,7 +133,7 @@ int main()
             clear(path, 64);
             clear(path2, 64);
 
-            strcpy(argv[argc - 1], path2, 64)
+            strcpy(argv[argc - 1], path2, 64);
             strcpy(argv[i], path, 64);
             getFileNameFromPath(path, fileName);
 
@@ -161,10 +161,10 @@ int main()
         else
         {
             printString("Destinasi bukan folder");
-            return;
+            executeProgram("shell", 0x2000, &dummyResult, 0x00);
         }
     }
-
+    executeProgram("shell", 0x2000, &dummyResult, 0x00);
 }
 
 int countFreeSector()

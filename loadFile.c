@@ -103,7 +103,7 @@ void main(int argc, char* argv[]) {
 		}
 
 		map[emptyMapIndex] = 0xFF;
-		sectors[emptySectorIndex * 16] = emptyMapIndex;
+		sectors[emptySectorIndex * 16 + sectcount] = emptyMapIndex;
 		
 		printf("File %s diletakan pada sektor %d\n", argv[1], emptyMapIndex);
 
@@ -118,7 +118,6 @@ void main(int argc, char* argv[]) {
 			}
 		}
 
-		emptySectorIndex++;
 		sectcount++;
 	}
 

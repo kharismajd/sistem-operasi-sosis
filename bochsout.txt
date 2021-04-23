@@ -34,45 +34,45 @@
 00000000000i[      ]   Sound support: SB16 ES1370
 00000000000i[      ]   USB support: UHCI OHCI EHCI xHCI
 00000000000i[      ]   VGA extension support: vbe cirrus voodoo
-00000000000i[MEM0  ] allocated memory at 0x7ff585495010. after alignment, vector=0x7ff585496000
+00000000000i[MEM0  ] allocated memory at 0x7fe3ba2d9010. after alignment, vector=0x7fe3ba2da000
 00000000000i[MEM0  ] 32,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=256
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/share/bochs/BIOS-bochs-latest')
-00000000000i[      ] lt_dlhandle is 0x561daefd82c0
+00000000000i[      ] lt_dlhandle is 0x55c52e62d2c0
 00000000000i[PLUGIN] loaded plugin libbx_hdimage.so
-00000000000i[      ] lt_dlhandle is 0x561daf619020
+00000000000i[      ] lt_dlhandle is 0x55c52ec6e020
 00000000000i[PLUGIN] loaded plugin libbx_soundalsa.so
 00000000000i[WAVOUT] ALSA: opened default PCM output device
 00000000000i[WAVOUT] changed sample rate to 44101
-00000000000i[      ] lt_dlhandle is 0x561daf6335f0
+00000000000i[      ] lt_dlhandle is 0x55c52ec88640
 00000000000i[PLUGIN] loaded plugin libbx_pci.so
-00000000000i[      ] lt_dlhandle is 0x561daf619bd0
+00000000000i[      ] lt_dlhandle is 0x55c52ec6ebc0
 00000000000i[PLUGIN] loaded plugin libbx_pci2isa.so
-00000000000i[      ] lt_dlhandle is 0x561daf6411b0
+00000000000i[      ] lt_dlhandle is 0x55c52ec961c0
 00000000000i[PLUGIN] loaded plugin libbx_usb_uhci.so
-00000000000i[      ] lt_dlhandle is 0x561daf643870
+00000000000i[      ] lt_dlhandle is 0x55c52ec98860
 00000000000i[PLUGIN] loaded plugin libbx_acpi.so
-00000000000i[      ] lt_dlhandle is 0x561daf6440a0
+00000000000i[      ] lt_dlhandle is 0x55c52ec99090
 00000000000i[PLUGIN] loaded plugin libbx_hpet.so
-00000000000i[      ] lt_dlhandle is 0x561daf644f10
+00000000000i[      ] lt_dlhandle is 0x55c52ec99f00
 00000000000i[PLUGIN] loaded plugin libbx_cmos.so
-00000000000i[      ] lt_dlhandle is 0x561daf645870
+00000000000i[      ] lt_dlhandle is 0x55c52ec9a860
 00000000000i[PLUGIN] loaded plugin libbx_dma.so
-00000000000i[      ] lt_dlhandle is 0x561daf6462c0
+00000000000i[      ] lt_dlhandle is 0x55c52ec9b2b0
 00000000000i[PLUGIN] loaded plugin libbx_pic.so
-00000000000i[      ] lt_dlhandle is 0x561daf646b20
+00000000000i[      ] lt_dlhandle is 0x55c52ec9bb10
 00000000000i[PLUGIN] loaded plugin libbx_pit.so
-00000000000i[      ] lt_dlhandle is 0x561daf647520
+00000000000i[      ] lt_dlhandle is 0x55c52ec9c510
 00000000000i[PLUGIN] loaded plugin libbx_vga.so
-00000000000i[      ] lt_dlhandle is 0x561daf647d80
+00000000000i[      ] lt_dlhandle is 0x55c52ec9cd70
 00000000000i[PLUGIN] loaded plugin libbx_floppy.so
-00000000000i[      ] lt_dlhandle is 0x561daf648930
+00000000000i[      ] lt_dlhandle is 0x55c52ec9d920
 00000000000i[PLUGIN] loaded plugin libbx_ioapic.so
-00000000000i[      ] lt_dlhandle is 0x561daf649130
+00000000000i[      ] lt_dlhandle is 0x55c52ec9e120
 00000000000i[PLUGIN] loaded plugin libbx_keyboard.so
-00000000000i[      ] lt_dlhandle is 0x561daf649900
+00000000000i[      ] lt_dlhandle is 0x55c52ec9e8f0
 00000000000i[PLUGIN] loaded plugin libbx_harddrv.so
-00000000000i[      ] lt_dlhandle is 0x561daf64bb60
+00000000000i[      ] lt_dlhandle is 0x55c52eca0b50
 00000000000i[PLUGIN] loaded plugin libbx_pci_ide.so
 00000000000i[PLUGIN] init_dev of 'pci' plugin device by virtual method
 00000000000i[DEV   ] i440FX PMC present at device 0, function 0
@@ -80,7 +80,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Wed Mar 17 18:15:29 2021 (time0=1615979729)
+00000000000i[CMOS  ] Setting initial clock to: Fri Apr 23 14:34:58 2021 (time0=1619163298)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -229,7 +229,7 @@
 00000427351i[BIOS  ] Found 1 cpu(s)
 00000441039i[BIOS  ] bios_table_addr: 0x000f9db8 end=0x000fcc00
 00000899957i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
-00001000000i[XGUI  ] charmap update. Font is 9 x 16
+00001261660i[XGUI  ] charmap update. Font is 9 x 16
 00001358978i[P2ISA ] PCI IRQ routing: PIRQA# set to 0x0b
 00001359003i[P2ISA ] PCI IRQ routing: PIRQB# set to 0x09
 00001359028i[P2ISA ] PCI IRQ routing: PIRQC# set to 0x0b
@@ -265,26 +265,26 @@
 00002009681i[BXVGA ] VBE known Display Interface b0c0
 00002009713i[BXVGA ] VBE known Display Interface b0c5
 00002012356i[VBIOS ] VBE Bios $Id: vbe.c 228 2020-01-02 23:09:02Z vruppert $
-00002170660i[XGUI  ] charmap update. Font is 9 x 16
+00010026400i[XGUI  ] charmap update. Font is 9 x 16
 00032863656i[BIOS  ] Booting from 0000:7c00
-00363740000p[XGUI  ] >>PANIC<< POWER button turned off.
-00363740000i[CPU0  ] CPU is in real mode (active)
-00363740000i[CPU0  ] CS.mode = 16 bit
-00363740000i[CPU0  ] SS.mode = 16 bit
-00363740000i[CPU0  ] EFER   = 0x00000000
-00363740000i[CPU0  ] | EAX=00000038  EBX=00000000  ECX=00090000  EDX=00000000
-00363740000i[CPU0  ] | ESP=0000fea8  EBP=0000fec2  ESI=000e16a6  EDI=0000ffac
-00363740000i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
-00363740000i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-00363740000i[CPU0  ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
-00363740000i[CPU0  ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
-00363740000i[CPU0  ] |  SS:1000( 0005| 0|  0) 00010000 0000ffff 0 0
-00363740000i[CPU0  ] |  ES:1000( 0005| 0|  0) 00010000 0000ffff 0 0
-00363740000i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00363740000i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00363740000i[CPU0  ] | EIP=0000e874 (0000e874)
-00363740000i[CPU0  ] | CR0=0x60000010 CR2=0x00000000
-00363740000i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
-00363740000i[CMOS  ] Last time is 1615979765 (Wed Mar 17 18:16:05 2021)
-00363740000i[XGUI  ] Exit
-00363740000i[SIM   ] quit_sim called with exit code 1
+02245050000p[XGUI  ] >>PANIC<< POWER button turned off.
+02245050000i[CPU0  ] CPU is in real mode (active)
+02245050000i[CPU0  ] CS.mode = 16 bit
+02245050000i[CPU0  ] SS.mode = 16 bit
+02245050000i[CPU0  ] EFER   = 0x00000000
+02245050000i[CPU0  ] | EAX=00000032  EBX=00000000  ECX=00090000  EDX=00000000
+02245050000i[CPU0  ] | ESP=0000fc96  EBP=0000fcb0  ESI=000e15d2  EDI=0000ffac
+02245050000i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+02245050000i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+02245050000i[CPU0  ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
+02245050000i[CPU0  ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
+02245050000i[CPU0  ] |  SS:4000( 0005| 0|  0) 00040000 0000ffff 0 0
+02245050000i[CPU0  ] |  ES:4000( 0005| 0|  0) 00040000 0000ffff 0 0
+02245050000i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+02245050000i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+02245050000i[CPU0  ] | EIP=0000e86d (0000e86d)
+02245050000i[CPU0  ] | CR0=0x60000010 CR2=0x00000000
+02245050000i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
+02245050000i[CMOS  ] Last time is 1619163522 (Fri Apr 23 14:38:42 2021)
+02245050000i[XGUI  ] Exit
+02245050000i[SIM   ] quit_sim called with exit code 1

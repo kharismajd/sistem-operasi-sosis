@@ -1,23 +1,24 @@
 #include "fileio.h"
 #include "folderio.h"
-
+ 
 int main()
 {
     char buffer[512];
     char arg[512];
-    char files[1024];
-    char folderName[14];
-
-    char dirIndex;
-    char fileIndex;
+ 
+    char fileBuffer[8192];
+    char fileName[14];
+ 
     char currDir;
-
-    int dirValid;
+ 
+    int result;
     int argIdx;
     int i;
-
-    readSector(buffer, 0x0F);
-
+ 
+    clear(buffer, 512);
+    clear(arg, 512);
+    readSector(buffer, 511);
+ 
     currDir = buffer[0];
     argIdx = 0;
     if (buffer[5] != 0x0) {
@@ -25,25 +26,20 @@ int main()
 			arg[argIdx] = buffer[i];
 			argIdx++;
 		}
-		
-        readSector(files, 0x101);
-        readSector(files + 512, 0x102);
-
-        getDirIdxFromPath(arg, currDir, &dirIndex, &dirValid);
-        getFileNameFromPath(arg, folderName);
-        if (folderName[0] == 0x0) {
-            currDir = dirIndex;
-            return;
+ 
+        if (isFolder(arg, currDir)) {
+            getFileNameFromPath(arg, fileName);
+            printString(fileName);
+            printString(" adalah sebuah folder\r\n");
+            executeProgram("shell", 0x4000, &result, 0x00);
         }
-        else {
-            for (fileIndex = 0; fileIndex < 64; fileIndex++) {
-                if (files[fileIndex * 16] == dirIndex && files[fileIndex * 16 + 1] == 0xFF && strCompare(folderName, files + fileIndex * 16 + 2, 14)) {
-                    currDir = fileIndex;
-                    return;
-                }
-            }
-            printString(folderName);
-            printString(" bukan sebuah folder/tidak ada pada direktori\r\n");
+
+        readFile(fileBuffer, arg, &result, currDir);
+ 
+        if (result == 1) {
+            printString(fileBuffer);
+            printString("\r\n");
         }
 	}
+    executeProgram("shell", 0x4000, &result, 0x00);
 }

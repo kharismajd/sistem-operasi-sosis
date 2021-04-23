@@ -1,5 +1,8 @@
+void printShell(char parentIndex);
+void cd(char *path, char *parentIndex);
+void ls(char parentIndex);
 
-int currentDir;
+char currentDir;
 char files[1024];
 
 void main() {
@@ -8,76 +11,118 @@ void main() {
 	char arg1[64];
 	char arg2[64];
 	char input[128];
+	char fileName[14];
+	char dirIdx;
+
 	int arg1Idx, arg2Idx;
 	int i;
 	int badCommand = 0;
 	int success = 1;
 	currentDir = 0xFF;
 
-    readSector(files, 0x101);
-    readSector(files + 512, 0x102);
 
-    printShell(currentDir);
-    
-    clear(input, 64);
-    clear(tempBuff, 512);
-    readString(input);		
+    while (1) {
+        readSector(files, 0x101);
+        readSector(files + 512, 0x102);
 
-    i = 0;
-    badCommand = 0;
+        printShell(currentDir);
+        
+        clear(input, 64);
+        clear(tempBuff, 512);
+        readString(input);		
 
-    clear(arg1, 32);
-    clear(arg2, 32);
-    arg1Idx = 0;
-    arg2Idx = 0;
+        i = 0;
+        badCommand = 0;
 
-    if (strCompare(input, "cd ", 3)) {
-        if (input[3] != 0x0) {
-            for(i = 3; input[i] != 0x0; i++) {
-                arg1[arg1Idx] = input[i];
-                arg1Idx++;
+        clear(arg1, 64);
+        clear(arg2, 64);
+        clear(fileName, 14);
+        arg1Idx = 0;
+        arg2Idx = 0;
+
+        if (strCompare(input, "cd ", 3)) {
+            if (input[3] != 0x0) {
+                for(i = 3; input[i] != 0x0; i++) {
+                    arg1[arg1Idx] = input[i];
+                    arg1Idx++;
+                }
+                cd(arg1, &currentDir);
             }
-            cd(arg1, &currentDir);
         }
-    }
-    else if (strCompare(input, "ls", 2)) {
-        tempBuff[0] = currentDir;
-        for (i = 1; input[i] != 0x0; i++)
-        {
-            tempBuff[i] = input[i-1];
+        else if (strCompare(input, "ls", 2)) {
+            ls(currentDir);
         }
-        writeSector(tempBuff, 0x0F);
-        clear(tempBuff, 512);
-        executeProgram("ls", 0x2000, success, 0x00);
-    }
-    else if (strCompare(input, "cat ", 4)) {
-        tempBuff[0] = currentDir;
-        for (i = 1; input[i] != 0x0; i++)
-        {
-            tempBuff[i] = input[i-1];
+        else if (strCompare(input, "cat ", 4)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("cat", 0x3000, &success, 0x00);
         }
-        writeSector(tempBuff, 0x0F);
-        clear(tempBuff, 512);
-        executeProgram("cat", 0x2000, success, 0x00);
-    }
-    else if (strCompare(input, "ln ", 3)) {
-        tempBuff[0] = currentDir;
-        for (i = 1; input[i] != 0x0; i++)
-        {
-            tempBuff[i] = input[i-1];
+        else if (strCompare(input, "ln ", 3)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("ln", 0x3000, &success, 0x00);
         }
-        writeSector(tempBuff, 0x0F);
-        clear(tempBuff, 512);
-        executeProgram("ln", 0x2000, success, 0x00);
-    }
-    else if (strCompare(input,"mkdir ", 6)) {
-        for (i = 6; input[i] != ' '; i++) {
-            arg1[arg1Idx] = input[i];
-            arg1Idx++;
-            makeDir(arg1,currentDir);
+        else if (strCompare(input,"mkdir ", 6)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("mkdir", 0x3000, success, 0x00);
         }
+        else if (strCompare(input,"mv ", 3)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("mv", 0x3000, success, 0x00);
+        }
+        else if (strCompare(input,"cp ", 3)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("cp", 0x3000, success, 0x00);
+        }
+        else if (strCompare(input,"rm ", 3)) {
+            tempBuff[0] = currentDir;
+            for (i = 1; input[i-1] != 0x0; i++)
+            {
+                tempBuff[i] = input[i-1];
+            }
+            writeSector(tempBuff, 511);
+            clear(tempBuff, 512);
+            executeProgram("rm", 0x3000, success, 0x00);
+        }
+        else if (strCompare(input,"./", 2)) {
+            for (i = 2; input[i] != 0x0; i++)
+            {
+                arg1[i-2] = input[i];
+            }
+            getDirIdxFromPath(arg1, currentDir, &dirIdx, success);
+            getFileNameFromPath(arg1, fileName);
+            executeProgram(fileName, 0x3000, success, dirIdx);
+        }
+        printString("\r\n");
     }
-    printString("\r\n");
 }
 
 void cd(char *path, char *parentIndex) {
@@ -109,24 +154,28 @@ void cd(char *path, char *parentIndex) {
 	}
 }
 
-void cat(char *path, char parentIndex) {
-	char buffer[8192];
+void ls(char parentIndex)
+{
+    char files[1024];
 	char fileName[14];
-	int result;
 
-	if (isFolder(path, parentIndex)) {
-		getFileNameFromPath(path, fileName);
-		printString(fileName);
-		printString(" adalah sebuah folder\r\n");
-		return;
-	}
+	int fileIndex;
+    int i;
 
-	readFile(buffer, path, &result, parentIndex);
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
 
-	if (result == 0) {
-		printString(buffer);
-		printString("\r\n");
-	}
+    for(fileIndex = 0; fileIndex < 64; fileIndex++)
+    {     
+        if (files[fileIndex * 16] == parentIndex && files[fileIndex * 16 + 2] != 0x0) {
+            clear(fileName, 14);
+            for(i = 0; i < 14; i++) {
+                fileName[i] = files[fileIndex * 16 + 2 + i];
+            }
+            printString(fileName);
+            printString("\r\n");
+        }
+    }
 }
 
 void printShell(char parentIndex) {
@@ -170,5 +219,5 @@ void printShell(char parentIndex) {
 		}
 		i--;
 	}
-	printString("> ");
+	printString(">");
 }

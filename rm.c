@@ -63,5 +63,5 @@ void main() {
             printString("File berhasil dihapus!\r\n");
         }
     }
-    interrupt(0x21, 0x06, "shell", 0x3000, &sukses);
+    executeProgram("shell", 0x2000, &sukses, 0x00);
 }

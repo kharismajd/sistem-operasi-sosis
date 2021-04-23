@@ -20,8 +20,9 @@ int main()
     int arg2Idx;
     int badCommand;
     int i;
+    int success;
 
-    readSector(buffer, 0x0F);
+    readSector(buffer, 511);
 
     currDir = buffer[0];
     for (i = 4; buffer[i] != ' '; i++) {
@@ -46,14 +47,14 @@ int main()
         searchFile(arg2, currDir, &dummyFileIndex, &toFileExist);
         if (toFileExist || isFolder(arg2, currDir)) {
             printString("Sudah ada file/folder dengan nama tersebut pada destinasi\r\n");
-            return;
+            executeProgram("shell", 0x2000,&success, 0x00);
         }
 
         if (isFolder(arg1, currDir)) {
             getFileNameFromPath(arg1, fileName);
             printString(fileName);
             printString(" adalah sebuah folder\r\n");
-            return;
+            executeProgram("shell", 0x2000,&success, 0x00);
         }
 
         searchFile(arg1, currDir, &fileIndex, &fromFileExist);
@@ -70,13 +71,13 @@ int main()
 
                 if (emptyFilesIndex == -1) {
                     printString("Tidak cukup entri di files\r\n");
-                    return;
+                    executeProgram("shell", 0x2000,&success, 0x00);
                 }
 
                 getFileNameFromPath(arg2, fileName);
                 if (fileName[0] == 0x0) {
                     printString("Tidak ada nama file destinasi\r\n");
-                    return;
+                    executeProgram("shell", 0x2000,&success, 0x00);
                 }
 
                 clear(files + emptyFilesIndex * 16, 16);
@@ -88,12 +89,12 @@ int main()
             } 
             else {
                 printString("Folder tidak valid\r\n");
-                return;
+                executeProgram("shell", 0x2000,&success, 0x00);
             }
         }
         else {
             printString("File tidak ditemukan\r\n");
-            return;
+            executeProgram("shell", 0x2000,&success, 0x00);
         }
 
         writeSector(files, 0x101);
@@ -101,6 +102,7 @@ int main()
 	}
 	else {
 		printString("Tidak ada file operand\r\n");
-        return;
+        executeProgram("shell", 0x2000,&success, 0x00);
 	}
+    executeProgram("shell", 0x2000, &success, 0x00);
 }

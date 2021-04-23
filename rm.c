@@ -14,11 +14,15 @@ void main() {
     ketemu = 0;
 
     // Dapatkan idx parent dan nama
-    interrupt(0x21, 0x02, direktori, 0x0D, 0);
+    readSector(direktori,0x00);
     currDir = direktori[0];
+    printString(currDir);
+    printString("\r\n");
     for (i = 0; i < 14; i++) {
         nama[i] = direktori[i+1];
+        printString(direktori[i]);
     }
+    printString("\r\n\n");
 
     // Baca sektor files & folder
     interrupt(0x21, 0x02, dirNfiles, 257, 0); // Karena 257 adalah sektor files yang pertama
@@ -51,7 +55,7 @@ void main() {
         }
     }
     if (!ketemu) {
-        printString("File/folder tidak timukan\r\n");
+        printString("File/folder tidak ditemukan\r\n");
     }
     else {
         if (dirNfilesentry == 0xFF) {

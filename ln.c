@@ -22,6 +22,11 @@ int main()
     int i;
     int success;
 
+    clear(files, 1024);
+    clear(buffer, 512);
+    clear(arg1, 64);
+    clear(arg2, 64);
+    clear(fileName, 14);
     readSector(buffer, 511);
 
     currDir = buffer[0];

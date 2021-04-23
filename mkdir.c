@@ -10,6 +10,8 @@ int main() {
     int i;
     int success;
 
+    clear(buffer, 512);
+    clear(arg, 14);
     readSector(buffer, 511);
 
     parentIndex = buffer[0];

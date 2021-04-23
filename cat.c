@@ -17,6 +17,8 @@ int main()
  
     clear(buffer, 512);
     clear(arg, 512);
+    clear(fileBuffer, 8192);
+    clear(fileName, 14);
     readSector(buffer, 511);
  
     currDir = buffer[0];

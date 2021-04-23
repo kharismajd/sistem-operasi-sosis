@@ -86,8 +86,9 @@ void makeDir(char *path, char *parentIndex)
 				files[fileIndex * 16 + 1] = 0xFF;
 				for(i = 0; i < 14; i++)
 				{
-					files[fileIndex * 16 + 2 + 1] = fileName[i];
+					files[fileIndex * 16 + 2 + i] = fileName[i];
 				}
+				break;
 			}
 		}
 

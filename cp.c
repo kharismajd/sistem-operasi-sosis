@@ -30,6 +30,17 @@ int main()
     int i;
     int nameLength;
 
+    clear(fileBuffer, 8192);
+    clear(files, 1024);
+    clear(map, 512);
+    clear(sectors, 512);
+    clear(buffer, 512);
+    clear(path, 64);
+    clear(path2, 64);
+    clear(fileName, 14);
+    for (i = 0; i < 4; i++) {
+        clear(argv[i], 64);
+    }
     readSector(buffer, 511);
     readSector(map, 0x100);
 	readSector(files, 0x101);
@@ -44,7 +55,7 @@ int main()
     nameLength = 0;
     while (buffer[i] != 0x0)
     {
-        if (buffer[i] == ' ')
+        if (buffer[i] == 32)
         {
             nameLength = 0;
             argc += 1;
@@ -78,7 +89,6 @@ int main()
             if (!isFileExist)
             {
                 printString("Tidak bisa menemukan file ");
-                printString(path);
                 printString("\r\n");
                 executeProgram("shell", 0x2000, &dummyResult, 0x00);
             }
@@ -103,7 +113,7 @@ int main()
             executeProgram("shell", 0x2000, &dummyResult, 0x00);
         }
     }
-
+    printString("Sampe sini?");
     //Cek jika cp memungkinkan
     if (neededSector > countFreeSector())
     {
@@ -123,6 +133,7 @@ int main()
         executeProgram("shell", 0x2000, &dummyResult, 0x00);
     }
 
+    printString("Sampe sini kah?");
     clear(path, 64);
     strcpy(argv[argc - 1], path, 64);
     if (isFolder(path, currDir))
